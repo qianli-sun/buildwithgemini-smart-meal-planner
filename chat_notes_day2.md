@@ -105,3 +105,34 @@ How should we resolve it? Answer very concisely and intuitively.
      ```
   2. Restarted the ADK Web server on port 8080 with Vertex AI enabled.
   3. Verified end-to-end: successfully generated responses querying Firestore without needing an API key.
+
+---
+
+### Turn 4
+
+#### 👤 User Prompt
+```text
+It works now! Now let's do Cloud Storage set-up next.
+
+This was the original prompt in the lab guide to set up Cloud Storage:
+"Create a Cloud Storage bucket for this project. Give it a name that fits my app (look at my project_brief.md; add a short random suffix if the name is taken), and set the permissions so objects can be viewed publicly (i.e. embedded in a web page as images)."
+
+Please adapt it to our current situation to make sure our agent can use the newly set-up Cloud Storage properly.
+```
+
+#### 🤖 Antigravity Response
+1. **Cloud Storage Bucket Created**:
+   - Bucket name: `gs://smart-meal-planner-images-5805be95`
+   - Location: `us-east1`
+   - Command: `gcloud storage buckets create gs://smart-meal-planner-images-5805be95 --project=qwiklabs-gcp-04-5805be9550d8 --location=us-east1 --uniform-bucket-level-access`
+2. **Public Read Permissions Granted**:
+   - Role: `roles/storage.objectViewer` bound to `allUsers`.
+   - Command: `gcloud storage buckets add-iam-policy-binding gs://smart-meal-planner-images-5805be95 --member="allUsers" --role="roles/storage.objectViewer"`
+3. **Application & Test Code Updated**:
+   - Updated `IMAGE_BUCKET_NAME = "smart-meal-planner-images-5805be95"` in `smart-meal-planner/app/tools.py`.
+   - Updated expected URL assertion in `smart-meal-planner/tests/unit/test_tools.py`.
+   - Added `IMAGE_BUCKET_NAME=smart-meal-planner-images-5805be95` to `.env`.
+4. **End-to-End Verification**:
+   - Ran `uv run pytest tests/unit` — 8 passed out of 8 (100% passing).
+   - Generated dish image test successfully uploaded `avocado-berry-toast.jpg` (240 KB).
+   - Tested public HTTP endpoint with `curl -s -I` — confirmed `HTTP/2 200 OK`, publicly embeddable in UI.

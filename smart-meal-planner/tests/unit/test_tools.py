@@ -119,7 +119,7 @@ async def test_generate_dish_image() -> None:
     res = await generate_dish_image("Avocado Berry Toast")
     assert "error" not in res
     assert res["status"] == "success"
-    assert res["image_url"].startswith("https://storage.googleapis.com/smart-meal-planner-images-5d6a513c/")
+    assert res["image_url"].startswith("https://storage.googleapis.com/smart-meal-planner-images-5805be95/")
 
 
 

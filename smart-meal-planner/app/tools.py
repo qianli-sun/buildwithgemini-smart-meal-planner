@@ -32,7 +32,7 @@ import httpx
 # Hardcoded project ID and GCS bucket as string literals
 FIRESTORE_PROJECT_ID = "qwiklabs-gcp-04-5805be9550d8"
 COLLECTION_NAME = "recipes"
-IMAGE_BUCKET_NAME = "smart-meal-planner-images-5d6a513c"
+IMAGE_BUCKET_NAME = "smart-meal-planner-images-5805be95"
 
 _firestore_client: firestore.Client | None = None
 _genai_client: genai.Client | None = None
