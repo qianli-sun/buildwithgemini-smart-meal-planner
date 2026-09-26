@@ -136,3 +136,30 @@ Please adapt it to our current situation to make sure our agent can use the newl
    - Ran `uv run pytest tests/unit` — 8 passed out of 8 (100% passing).
    - Generated dish image test successfully uploaded `avocado-berry-toast.jpg` (240 KB).
    - Tested public HTTP endpoint with `curl -s -I` — confirmed `HTTP/2 200 OK`, publicly embeddable in UI.
+
+---
+
+### Turn 5
+
+#### 👤 User Prompt
+```text
+Let's move on to step 6 - Add tools. 
+
+1) This was the original prompt in the lab guide to set up tools:
+"Look at my project_brief.md and the agent I'm building. Suggest 2-3 tools it could call to take real action or fetch real data, then recommend the simplest one to implement first."
+
+"Implement the tool we just discussed as a function tool and add it to my agent. Keep the implementation minimal."
+
+I recall you gave me 3 ideas for tools from yesterday, and you built all of them. Can you confirm and also tell me if we need to repeat these two prompts again? 
+
+2) After you are done with 1), give me a simple prompt for each of the tools you built, so that I can enter it in the ADK Dev UI to make sure they are working.
+
+Answer both questions very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Confirmation**: Confirmed that all 3 tools were built yesterday and are preserved in `app/tools.py` and registered in `app/agent.py`. No need to repeat the prompts.
+   - `check_daily_schedule`: Calendar & meeting load tier calculator.
+   - `generate_grocery_list`: Supermarket aisle-consolidated checklist.
+   - `generate_dish_image`: Imagen 3 generation with GCS upload (verified in Turn 4).
+2. **Verification Prompts**: Provided intuitive prompts for testing each tool in the ADK Dev UI.
