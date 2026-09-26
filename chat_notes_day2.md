@@ -56,3 +56,29 @@ However, I did manage to publish to github so that it saves my work progress til
 
 #### 🤖 Antigravity Response
 Restored repository into workspace, audited new GCP environment, initiated GitHub device authentication, and aligned continuation roadmap with the 17-step lab manual.
+
+---
+
+### Turn 2
+
+#### 👤 User Prompt
+```text
+I did step 1-3 of the lab guide you listed above, in a separate chat. Also, I don't think we need step 4, since we are continue yesterday's work.
+
+Let's start at step 5 - Add persistent storage. Let's do Fire Storage set-up first.
+
+1) This was the original prompt in the lab guide to set up Fire Storage:
+"Give my agent a Firestore backend: a collection that fits my app (look at my project_brief.md) with a few sensible fields, function tools to read and write it, and a few seeded items. Important: hardcode my project ID as a string for the Firestore client and the seed script (find it with `gcloud config get-value project`). Don't read it from `google.auth.default()` or `GOOGLE_CLOUD_PROJECT`; on Agent Platform those return the project number, which breaks Firestore after you deploy."
+
+Please adapt it to our current situation to make sure our agent can use the newly set-up Fire Storage properly
+
+2) After it's set-up, launch agent playground for me. Also, give me a simple prompt so that I can enter it in the ADK Dev UI to make sure the Fire Storage is set up properly.
+```
+
+#### 🤖 Antigravity Response
+1. **Firestore Database Provisioned**: Created the default Firestore native database in `nam5` for the new active project `qwiklabs-gcp-04-5805be9550d8`.
+2. **Hardcoded Project ID Updated**: Updated `FIRESTORE_PROJECT_ID = "qwiklabs-gcp-04-5805be9550d8"` in `app/tools.py` and `scripts/seed_recipes.py`, and updated fallback in `app/app_utils/services.py`.
+3. **Seeding Executed**: Ran `uv run python scripts/seed_recipes.py`, seeding 8 nutritious recipes into the `recipes` collection.
+4. **Verified via Tests**: All Firestore tests in `tests/unit/test_tools.py` passed (`test_search_recipes`, `test_get_recipe_details`, `test_save_and_retrieve_recipe`, `test_generate_grocery_list`).
+5. **Playground Launched**: Stopped previous default `weather-agent` on port 8080 and launched ADK Web playground for `smart-meal-planner`.
+6. **Verification Prompt Provided**: `"What healthy lunch recipes do you have in your database?"` to verify live Firestore querying.

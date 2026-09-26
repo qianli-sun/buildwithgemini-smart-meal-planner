@@ -30,7 +30,7 @@ from google.genai import types
 import httpx
 
 # Hardcoded project ID and GCS bucket as string literals
-FIRESTORE_PROJECT_ID = "qwiklabs-gcp-04-5d6a513c0b8e"
+FIRESTORE_PROJECT_ID = "qwiklabs-gcp-04-5805be9550d8"
 COLLECTION_NAME = "recipes"
 IMAGE_BUCKET_NAME = "smart-meal-planner-images-5d6a513c"
 

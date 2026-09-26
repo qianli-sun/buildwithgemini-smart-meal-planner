@@ -22,7 +22,7 @@ GOOGLE_CLOUD_PROJECT, which breaks Firestore (default) database lookups.
 from google.cloud import firestore
 
 # Hardcoded project ID as string - DO NOT change to env var or google.auth.default()
-FIRESTORE_PROJECT_ID = "qwiklabs-gcp-04-5d6a513c0b8e"
+FIRESTORE_PROJECT_ID = "qwiklabs-gcp-04-5805be9550d8"
 COLLECTION_NAME = "recipes"
 
 SEED_RECIPES = [
