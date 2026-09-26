@@ -369,3 +369,37 @@ Two follow-up questions:
 2. **Intuitive Explanation of Public URL vs Local File**:
    - Web browsers rendering the UI cannot reach private local server paths or bare filenames (which produce broken image icons).
    - Because our `generate_dish_image` tool uploads generated images to our public Cloud Storage bucket (`https://storage.googleapis.com/<bucket>/<object>`), the A2UI `<Image>` component loads and displays the picture directly inside the card.
+
+---
+
+### Turn 14
+
+#### 👤 User Prompt
+```text
+Now let's do Step 12 - Build a Frontend.
+
+There are several sub-steps. Let's do the first sub-step "Redeploy your finished agent" first.
+
+1) The prompt in this section from the lab guide says 
+
+"Redeploy my agent to Agent Platform. If my agent reads any API keys from environment variables (like GOOGLE_MAPS_API_KEY), pass them to the deployment with --update-env-vars."
+
+"Grant my deployed agent's service account the roles it needs: roles/datastore.user for Firestore, and roles/storage.objectAdmin on my image bucket if it generates images."
+
+Do these two things
+
+2) The lab guide says "Grab the resource name from the fresh deployment_metadata.json. You'll point the frontend at it in a moment." I don't understand. Please explain very intuitively and concisely.
+```
+
+#### 🤖 Antigravity Response
+1. **Redeployed Agent & Granted Permissions**:
+   - Verified that the Agent Runtime service account (`service-397009693787@gcp-sa-aiplatform-re.iam.gserviceaccount.com`) has `roles/datastore.user` and `roles/storage.admin`.
+   - Updated CLI toolchain to `agents-cli 1.7.0` to match scaffolding.
+   - Cleared stale `deployment_metadata.json` referencing yesterday's weather test agent.
+   - Fixed container dependencies by adding `sse-starlette` and ensuring session service falls back to `us-east1`.
+   - Successfully deployed `smart-meal-planner` to Agent Platform:
+     - Resource Name: `projects/397009693787/locations/us-east1/reasoningEngines/4770356541431742464`
+     - Agent Card URL: `https://us-east1-aiplatform.googleapis.com/reasoningEngines/v1/projects/397009693787/locations/us-east1/reasoningEngines/4770356541431742464/api/a2a/app/.well-known/agent-card.json`
+2. **Explained Resource Name & Frontend Intuitively**:
+   - Explained that the "resource name" is the unique cloud address / phone number of the deployed agent.
+   - Explained that the frontend chat website is just an empty container until you "point" it at this address so it knows where to send chat messages.
