@@ -8,3 +8,4 @@
   git push origin main
   ```
 - **Execution**: Run this command immediately after verifying the change, without waiting for the user to prompt for a commit.
+- **Chat Notes**: Keep `chat_notes_day2.md` in the project root updated with user prompts, agent responses, and key technical decisions before committing.
