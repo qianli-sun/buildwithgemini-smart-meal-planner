@@ -21,6 +21,7 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.apps import App
 from google.adk.models import Gemini
 from google.adk.tools.preload_memory_tool import PreloadMemoryTool
+from google.adk.tools.load_memory_tool import LoadMemoryTool
 from google.genai import types
 
 from app.tools import (
@@ -114,6 +115,7 @@ root_agent = Agent(
     ),
     tools=[
         PreloadMemoryTool(),
+        LoadMemoryTool(),
         search_recipes,
         search_online_recipes,
         get_recipe_details,

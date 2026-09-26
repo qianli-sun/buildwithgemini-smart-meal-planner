@@ -278,3 +278,31 @@ Answer these questions very concisely and intuitively.
    - Kitchen gear & pantry staples (air fryer, Instant Pot, olive oil).
    - Household size & meal prep habits (single-portion, double-portion leftovers).
 3. **Verification Workflow**: Provided step-by-step 2-session instructions to verify memory extraction and recall in the ADK Dev UI.
+
+---
+
+### Turn 10
+
+#### 👤 User Prompt
+```text
+I tested Step A and B you recommended above. I didn't see in the Events tab of the ADK Dev UI that it's loading the "PreloadMemoryTool" as you said. 
+
+Also, the lab guide says I can see the stored memories in the Agent Platform UI here:
+https://console.cloud.google.com/agent-platform/memory-bank?project=qwiklabs-gcp-04-5805be9550d8
+
+But I only saw the memory for the test weather agent, not this agent we are building.
+
+Can you resolve the issue, and I can test using the Step A and B again? Answer very concisley and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Root Cause Analysis & Fixes**:
+   - **Reasoning Engine Location Mismatch**: When given short-form `--memory_service_uri=agentengine://<ID>`, ADK loaded `GOOGLE_CLOUD_LOCATION=global`, while the deployed Agent Engine was in `us-east1`, causing background ingest to throw `404 NOT_FOUND: ReasoningEngine does not exist`.
+   - **Fix Applied**: Updated `MEMORY_SERVICE_URI` in `.env` and `adk web` startup command to the full canonical URI:
+     `agentengine://projects/qwiklabs-gcp-04-5805be9550d8/locations/us-east1/reasoningEngines/2409907386736181248`
+   - **Events Tab & Preload vs Load Memory**: Explained that `PreloadMemoryTool` is a silent prompt preprocessor that runs before LLM invocation (no tool call event). Added `LoadMemoryTool` alongside it in `app/agent.py` so the model can also explicitly call `load_memory` when looking up past facts.
+   - **Console Name Explanation**: Explained that the lab instructions reuse the deployed Reasoning Engine (`weather-agent`) as the Memory Bank container, so Google Cloud labels the memory bank as `weather-agent`. Stored facts live inside it.
+2. **Live Verification**:
+   - Tested Session 1 (storing peanut allergy, Mediterranean food preference, and 15-minute Monday lunch constraint).
+   - Verified that Vertex AI Memory Bank extracted and persisted all 3 facts.
+   - Tested Session 2 (asking "What should I make for lunch this Monday?"): Agent automatically recalled the 15-minute express window, peanut allergy, and Mediterranean preference to recommend the Mediterranean Chickpea Salad Bowl.
