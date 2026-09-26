@@ -190,3 +190,30 @@ Answer both questions very concisely and intuitively.
 1. **Confirmation**: Confirmed that `search_online_recipes` (backed by TheMealDB API) was built yesterday in `app/tools.py` and registered in `app/agent.py`. No need to repeat the prompt.
 2. **Verification & Live Trace**: Verified that calling the endpoint triggered live HTTP requests to `https://www.themealdb.com/api/json/v1/1/search.php`, returning authentic recipes with zero errors.
 3. **Prompt Provided**: Provided an intuitive prompt for the user to test online recipe lookup in the ADK Dev UI.
+
+---
+
+### Turn 7
+
+#### 👤 User Prompt
+```text
+It worked! Let's move on to step 8 - Generate Images. 
+
+1) This was the original prompt in the lab guide:
+"Add a tool that generates an image for an item in my agent's domain (look at my project_brief.md) using the gemini-3.1-flash-lite-image model in the global region. Do two things with the generated image: (1) save it with tool_context.save_artifact so it shows up in the Playground's Artifacts panel, and (2) upload the same image bytes to the public Cloud Storage bucket I created earlier and return its public https URL (https://storage.googleapis.com/<bucket>/<object>) from the tool. Hardcode the bucket name as a string, the same way we hardcoded the Firestore project. Do not write the image to a local file and return a path. Use the Developer Knowledge MCP to confirm the API if you're unsure."
+
+I recall you already did this. Can you confirm and also tell me if we need to repeat this prompt again? 
+
+2) After you are done with 1), give me a simple prompt, so that I can enter it in the ADK Dev UI to make sure the Image Generation is working.
+
+Answer both questions very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Confirmation**: Confirmed that `generate_dish_image` in `app/tools.py` implements all requirements of Step 8:
+   - Uses `gemini-3.1-flash-lite-image` in `global` region.
+   - Saves artifact with `tool_context.save_artifact` for the Playground Artifacts panel.
+   - Uploads in-memory bytes directly to public GCS bucket `smart-meal-planner-images-5805be95` without local files.
+   - Returns public HTTPS URL.
+   - No need to repeat the prompt.
+2. **Verification Prompt Provided**: Provided a simple prompt to generate a photo and view both in the Artifacts panel and via public GCS URL.
