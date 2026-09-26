@@ -403,3 +403,26 @@ Do these two things
 2. **Explained Resource Name & Frontend Intuitively**:
    - Explained that the "resource name" is the unique cloud address / phone number of the deployed agent.
    - Explained that the frontend chat website is just an empty container until you "point" it at this address so it knows where to send chat messages.
+
+---
+
+### Turn 15
+
+#### 👤 User Prompt
+```text
+Here's the next sub-step (Build the frontend):
+
+The prompt in this section from the lab guide says 
+
+"Using the build-agent-frontend skill, copy its minimal FastAPI proxy and chat UI template into ./frontend and wire it to my deployed agent using AGENT_ENGINE_RESOURCE_NAME and AGENT_DIRECTORY (my agent_directory from agents-cli-manifest.yaml). Keep it a plain chat UI. Do not build a React app or pull in a large sample frontend." Do it.
+```
+
+#### 🤖 Antigravity Response
+1. **Copied Frontend Template**:
+   - Copied the minimal FastAPI proxy and chat UI template from `.agents/skills/build-agent-frontend/template` into `./frontend` (and `./smart-meal-planner/frontend`).
+   - Maintained clean minimal HTML/JS chat UI without adding heavy frontend frameworks.
+2. **Wired Configuration**:
+   - Configured `AGENT_ENGINE_RESOURCE_NAME=projects/397009693787/locations/us-east1/reasoningEngines/4770356541431742464` and `AGENT_DIRECTORY=app` in both `.env` and default fallbacks in `main.py`.
+   - Enhanced `main.py` with compatibility imports for `a2a-sdk` (handling both v0.3 and v1.x) and robust static file path resolution.
+3. **Verified Live Connectivity**:
+   - Validated that the proxy successfully authenticates with ADC and fetches the live Agent Card (`HTTP 200 OK`) from the deployed agent on Agent Runtime.
