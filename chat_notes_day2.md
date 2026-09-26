@@ -82,3 +82,26 @@ Please adapt it to our current situation to make sure our agent can use the newl
 4. **Verified via Tests**: All Firestore tests in `tests/unit/test_tools.py` passed (`test_search_recipes`, `test_get_recipe_details`, `test_save_and_retrieve_recipe`, `test_generate_grocery_list`).
 5. **Playground Launched**: Stopped previous default `weather-agent` on port 8080 and launched ADK Web playground for `smart-meal-planner`.
 6. **Verification Prompt Provided**: `"What healthy lunch recipes do you have in your database?"` to verify live Firestore querying.
+
+---
+
+### Turn 3
+
+#### 👤 User Prompt
+```text
+I ran the example prompt in the ADK Dev UI. It says "ValueError: No API key was provided. Please pass a valid API key. Learn how to create an API key at https://ai.google.dev/gemini-api/docs/api-key." 
+
+How should we resolve it? Answer very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+* **Root Cause**: The SDK was defaulting to Google AI Studio mode (which requires a `GEMINI_API_KEY`) because the local `.env` file was missing after the environment wipe.
+* **Resolution**:
+  1. Created `.env` in `smart-meal-planner/` with:
+     ```bash
+     GOOGLE_GENAI_USE_VERTEXAI=true
+     GOOGLE_CLOUD_PROJECT=qwiklabs-gcp-04-5805be9550d8
+     GOOGLE_CLOUD_LOCATION=global
+     ```
+  2. Restarted the ADK Web server on port 8080 with Vertex AI enabled.
+  3. Verified end-to-end: successfully generated responses querying Firestore without needing an API key.
