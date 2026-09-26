@@ -349,3 +349,23 @@ Two questions (answer very concisely and intuitively):
 #### 🤖 Antigravity Response
 1. **Browser Tab**: No need to close or reopen the tab. Simply refresh the page (or click "New Session" / "+") so it connects to the restarted server with the new A2UI configuration.
 2. **Streaming Setting**: The unchecked "Streaming" checkbox under "More Options" is the exact setting. Because it is already unchecked, streaming is already OFF, so you are ready to test!
+
+---
+
+### Turn 13
+
+#### 👤 User Prompt
+```text
+Two follow-up questions:
+1) I entered the prompt you suggested, and it returned an image in both the ADK chat panel, and also the Artifacts tab when click into Artifacts tab. Is the image in the chat panel the so-called "card" the lab guide is referring to?
+
+2) Also, I don't understand this paragraph from the lab guide, please explain very intuitively and concisely: "A card can also show an image. Add an Image component and set its URL to the public URL your image tool returns, and the picture appears inside the card instead of only in the Artifacts panel. Ask your agent to generate an image for an item and show it, and you should get a card with the picture in it. The URL must be a public https link. A bare artifact filename cannot be loaded by the renderer and shows as a broken image."
+```
+
+#### 🤖 Antigravity Response
+1. **Clarified What a "Card" Is**:
+   - Explained that in A2UI, a "Card" is the visual container box in the chat containing structured layout components (the image, title, and recipe text rows).
+   - Distinguished the chat card from the Artifacts panel (which is ADK's raw file inspector).
+2. **Intuitive Explanation of Public URL vs Local File**:
+   - Web browsers rendering the UI cannot reach private local server paths or bare filenames (which produce broken image icons).
+   - Because our `generate_dish_image` tool uploads generated images to our public Cloud Storage bucket (`https://storage.googleapis.com/<bucket>/<object>`), the A2UI `<Image>` component loads and displays the picture directly inside the card.
