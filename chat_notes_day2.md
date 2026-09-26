@@ -333,3 +333,19 @@ The first step of step 11 in the lab guide says
    - Restarted `adk web` daemon on port 8080 with the Vertex AI Memory Bank connection.
    - Tested live execution: verified the agent produces structured A2UI parts wrapped in `<a2a_datapart_json>` (`beginRendering`, `surfaceUpdate`).
    - Ran all unit tests (8 passed).
+
+---
+
+### Turn 12
+
+#### 👤 User Prompt
+```text
+Two questions (answer very concisely and intuitively):
+1) You said you "Restarted ADK Server". I kept the ADK Dev UI browser page opening from the previous step's validation. Do I need to close and reopen it using http://localhost:8080?
+
+2) You said "Turn Token Streaming OFF before testing:.." I didn't find the Gear Icon on the top right, but when I click the "More Options" icon on top right of the ADK dev UI, it shows two check boxes called Branches and Streaming. I saw both are not checked.
+```
+
+#### 🤖 Antigravity Response
+1. **Browser Tab**: No need to close or reopen the tab. Simply refresh the page (or click "New Session" / "+") so it connects to the restarted server with the new A2UI configuration.
+2. **Streaming Setting**: The unchecked "Streaming" checkbox under "More Options" is the exact setting. Because it is already unchecked, streaming is already OFF, so you are ready to test!
