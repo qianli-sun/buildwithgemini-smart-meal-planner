@@ -245,3 +245,36 @@ Answer both questions very concisely and intuitively.
    - Adds minimal value: recipes and schedules are already cleanly handled by your database tools (`search_recipes`), external APIs (`TheMealDB`), and image models.
    - In addition, the sandbox requires a deployed Agent Engine (the old one in `deployment_metadata.json` belonged to yesterday's wiped project).
    - **Recommendation**: Skip Step 9 and proceed directly to Step 10 (Add Memory) and Step 11 (A2UI).
+
+---
+
+### Turn 9
+
+#### 👤 User Prompt
+```text
+It worked! Let's move to Step 10 — Add Memory. 
+
+1) This was the original prompt in the lab guide to set up tools:
+"Use the memory-bank-setup skill to add memory to my agent. Reuse the Agent Engine from my earlier deployment as the Memory Bank (its ID is the last part of remote_agent_runtime_id in deployment_metadata.json). Also set the memory service in the app code so it's used when I redeploy later, but don't redeploy now. Then restart my local playground with `uv run adk web . --port 8080 --reload_agents --memory_service_uri=agentengine://<ID>` instead of `agents-cli playground`, and use that same command whenever I ask you to launch or restart the playground."
+
+I recall you already did this. Can you confirm and also tell me if we need to repeat this prompt again?
+
+2) I recall you chose several aspects to remember about a user yesterday. Can you tell me what are those?
+
+3) After you are done with 1) and 2), tell me how to test out memory in the ADK dev UI
+
+Answer these questions very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Confirmation & Environment Alignment**:
+   - Confirmed that `PreloadMemoryTool` (read) and `generate_memories_callback` (write) are already wired into `app/agent.py`.
+   - Updated the Agent Engine / Memory Bank ID from yesterday's wiped environment (`3285716776771387392`) to today's active Agent Engine (`2409907386736181248`) in `deployment_metadata.json`, `app/app_utils/services.py`, and `.env`.
+   - Restarted the playground with `--memory_service_uri=agentengine://2409907386736181248`.
+2. **5 Stored Memory Aspects**:
+   - Dietary restrictions & allergies (peanut, gluten, dairy).
+   - Food preferences & favorite cuisines (Mediterranean, Thai, high-protein).
+   - Remote workday schedule patterns (sprint days $\le 15$m vs. relaxed $45+$m).
+   - Kitchen gear & pantry staples (air fryer, Instant Pot, olive oil).
+   - Household size & meal prep habits (single-portion, double-portion leftovers).
+3. **Verification Workflow**: Provided step-by-step 2-session instructions to verify memory extraction and recall in the ADK Dev UI.

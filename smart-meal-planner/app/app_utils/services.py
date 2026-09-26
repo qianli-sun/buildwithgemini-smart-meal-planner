@@ -86,7 +86,7 @@ def get_memory_service():
         or os.environ.get("GOOGLE_CLOUD_LOCATION")
         or "us-east1"
     )
-    agent_engine_id = os.environ.get("GOOGLE_CLOUD_AGENT_ENGINE_ID", "3285716776771387392")
+    agent_engine_id = os.environ.get("GOOGLE_CLOUD_AGENT_ENGINE_ID", "2409907386736181248")
     return VertexAiMemoryBankService(
         project=project,
         location=location,
