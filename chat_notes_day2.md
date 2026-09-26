@@ -306,3 +306,30 @@ Can you resolve the issue, and I can test using the Step A and B again? Answer v
    - Tested Session 1 (storing peanut allergy, Mediterranean food preference, and 15-minute Monday lunch constraint).
    - Verified that Vertex AI Memory Bank extracted and persisted all 3 facts.
    - Tested Session 2 (asking "What should I make for lunch this Monday?"): Agent automatically recalled the 15-minute express window, peanut allergy, and Mediterranean preference to recommend the Mediterranean Chickpea Salad Bowl.
+
+---
+
+### Turn 11
+
+#### 👤 User Prompt
+```text
+It worked! Let's move on to step 11 - Enrich Responses with A2UI. I didn't do this step yesterday.
+
+The first step of step 11 in the lab guide says
+"Use the enable-a2ui skill to add A2UI to my agent: build the system prompt with A2uiSchemaManager (version 0.8) and the Basic Catalog, copy in a2ui_utils.py, and wire it up as an after_model_callback." Please do it.
+```
+
+#### 🤖 Antigravity Response
+1. **Installed Dependencies**:
+   - Installed `a2ui-agent-sdk==0.4.0`, `a2ui-core==0.1.1`, and `antlr4-python3-runtime==4.13.2` via `uv add "a2ui-agent-sdk>=0.4.0,<0.5.0"`.
+   - Handled package compatibility smoothly via `[tool.uv]` dependency override in `pyproject.toml`.
+2. **Copied A2UI Utilities**:
+   - Copied `a2ui_utils.py` template to `app/a2ui_utils.py`.
+3. **Configured System Prompt & Callback**:
+   - Initialized `A2uiSchemaManager(version="0.8", catalogs=[BasicCatalog.get_config("0.8")])`.
+   - Generated the comprehensive A2UI system prompt containing component schemas, styling constraints (tiny/flat cards, Card > Column > Text/Image, public image URLs), and examples.
+   - Attached `after_model_callback=a2ui_callback` to `root_agent` alongside existing `after_agent_callback=generate_memories_callback`.
+4. **Verified Live Server**:
+   - Restarted `adk web` daemon on port 8080 with the Vertex AI Memory Bank connection.
+   - Tested live execution: verified the agent produces structured A2UI parts wrapped in `<a2a_datapart_json>` (`beginRendering`, `surfaceUpdate`).
+   - Ran all unit tests (8 passed).

@@ -16,13 +16,17 @@
 import datetime
 from zoneinfo import ZoneInfo
 
+from a2ui.basic_catalog.provider import BasicCatalog
+from a2ui.schema.manager import A2uiSchemaManager
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.apps import App
 from google.adk.models import Gemini
-from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from google.adk.tools.load_memory_tool import LoadMemoryTool
+from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from google.genai import types
+
+from app.a2ui_utils import a2ui_callback
 
 from app.tools import (
     check_daily_schedule,
@@ -81,21 +85,18 @@ async def generate_memories_callback(callback_context: CallbackContext) -> None:
     return None
 
 
-root_agent = Agent(
-    # Keep in sync with agents-cli-manifest.yaml: agents-cli derives this name
-    # from the project `name:` recorded there, and telemetry reports it as
-    # gen_ai.agent.name. Renaming the agent only here makes the two disagree,
-    # and anything selecting traces by name stops finding this agent's.
-    name="simple_agent",
-    model=Gemini(
-        model=MODEL,
-        retry_options=types.HttpRetryOptions(attempts=3),
-    ),
-    instruction=(
+schema_manager = A2uiSchemaManager(
+    version="0.8",
+    catalogs=[BasicCatalog.get_config("0.8")],
+)
+
+instruction = schema_manager.generate_system_prompt(
+    role_description=(
         "You are SmartMeal Planner, a culinary and nutrition assistant designed for busy remote professionals.\n"
         "You help users plan healthy meals (breakfast, lunch, dinner), check daily schedule constraints, generate grocery lists, and create visual dish previews based on a Firestore database of recipes.\n\n"
         "Memory & Personalization:\n"
         "- PreloadMemoryTool automatically loads the user's cross-session facts and preferences into context.\n"
+        "- Use LoadMemoryTool when you need to explicitly search user history or preferences.\n"
         "- Remember and actively apply the user's specific culinary profile across conversations:\n"
         "  1. Dietary restrictions & allergies (e.g. gluten-free, dairy-free, nut/shellfish allergies, vegetarian).\n"
         "  2. Food preferences & favorite cuisines (e.g. loves Mediterranean/Asian, high-protein focus, dislikes cilantro/spicy food).\n"
@@ -113,6 +114,39 @@ root_agent = Agent(
         "- Use `generate_grocery_list` to consolidate ingredients across selected recipes into an organized supermarket shopping checklist grouped by aisle.\n"
         "- Be concise, practical, and helpful with nutrition, ingredients, and prep times."
     ),
+    workflow_description="Analyze the request, call the appropriate tools (checking schedule, fetching recipe details, or generating images), and return structured UI when presenting meal plans, recipe summaries, dish cards, or grocery checklists.",
+    ui_description=(
+        "Keep every surface tiny and flat: ONE Card > ONE Column > a few Text rows. "
+        "Never nest a Card inside a Card. "
+        "Use ONLY these components: Card, Column, Row, Text, and Image. Do not use "
+        "Table or Heading (unsupported), or Buttons, actions, or forms (they do "
+        "nothing in adk web). "
+        "You may include one Image component, but only when you have a public https "
+        "URL for the image (for example the URL an image tool returns after uploading "
+        "to a public bucket). Set the Image url to that exact https link, for example "
+        "{\"Image\": {\"url\": {\"literalString\": \"https://...\"}}}. Never point an "
+        "Image at a bare filename, an artifact name, or a non-http(s) path. If you do "
+        "not have a public URL, add a short Text line noting the image instead. "
+        "No markdown in text; use the usageHint property ('h1', 'h2', 'body') for "
+        "headings and emphasis. "
+        "Output ONLY the raw A2UI JSON array — no prose, and never wrap it in "
+        "<a2a_datapart_json> tags or 'kind'/'data'/'metadata' objects."
+    ),
+    include_schema=True,
+    include_examples=True,
+)
+
+root_agent = Agent(
+    # Keep in sync with agents-cli-manifest.yaml: agents-cli derives this name
+    # from the project `name:` recorded there, and telemetry reports it as
+    # gen_ai.agent.name. Renaming the agent only here makes the two disagree,
+    # and anything selecting traces by name stops finding this agent's.
+    name="simple_agent",
+    model=Gemini(
+        model=MODEL,
+        retry_options=types.HttpRetryOptions(attempts=3),
+    ),
+    instruction=instruction,
     tools=[
         PreloadMemoryTool(),
         LoadMemoryTool(),
@@ -126,6 +160,7 @@ root_agent = Agent(
         get_weather,
         get_current_time,
     ],
+    after_model_callback=a2ui_callback,
     after_agent_callback=generate_memories_callback,
 )
 
