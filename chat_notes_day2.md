@@ -163,3 +163,30 @@ Answer both questions very concisely and intuitively.
    - `generate_grocery_list`: Supermarket aisle-consolidated checklist.
    - `generate_dish_image`: Imagen 3 generation with GCS upload (verified in Turn 4).
 2. **Verification Prompts**: Provided intuitive prompts for testing each tool in the ADK Dev UI.
+
+---
+
+### Turn 6
+
+#### 👤 User Prompt
+```text
+It worked! Let's move on to step 7 - Call External APIs. 
+
+1) This was the original prompt in the lab guide to set up tools:
+"Look at my project_brief.md. Find a free public API that fits my app's domain
+(browse the public-apis directory at https://github.com/public-apis/public-apis),
+then add a function tool that calls it and returns real data. Keep the
+implementation minimal, and if the API needs a key, read it from an environment
+variable rather than hardcoding it."
+
+I recall you already did this. Can you confirm and also tell me if we need to repeat this prompt again? 
+
+2) After you are done with 1), give me a simple prompt, so that I can enter it in the ADK Dev UI to make sure the call to the external API is working.
+
+Answer both questions very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Confirmation**: Confirmed that `search_online_recipes` (backed by TheMealDB API) was built yesterday in `app/tools.py` and registered in `app/agent.py`. No need to repeat the prompt.
+2. **Verification & Live Trace**: Verified that calling the endpoint triggered live HTTP requests to `https://www.themealdb.com/api/json/v1/1/search.php`, returning authentic recipes with zero errors.
+3. **Prompt Provided**: Provided an intuitive prompt for the user to test online recipe lookup in the ADK Dev UI.
