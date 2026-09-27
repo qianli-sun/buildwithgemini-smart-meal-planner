@@ -370,7 +370,18 @@ Options:
   fs.mkdirSync(tempDir, { recursive: true });
 
   console.log('\nLaunching Playwright Chromium browser...');
-  const launchOptions = { headless: options.headless, args: ['--no-sandbox'] };
+  const launchOptions = {
+    headless: options.headless,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--use-gl=swiftshader',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+    ],
+  };
   if (fs.existsSync('/usr/bin/google-chrome')) {
     launchOptions.executablePath = '/usr/bin/google-chrome';
   }
@@ -381,6 +392,20 @@ Options:
   });
 
   const page = await context.newPage();
+
+  // Intercept MP4 video requests to serve directly from local disk for 100% smooth, zero-latency playback
+  await page.route('**/*.mp4', async (route) => {
+    if (fs.existsSync('/tmp/japanese_ramen_10s.mp4')) {
+      console.log('Serving /tmp/japanese_ramen_10s.mp4 directly from local disk for zero-lag instant playback!');
+      await route.fulfill({
+        status: 200,
+        contentType: 'video/mp4',
+        body: fs.readFileSync('/tmp/japanese_ramen_10s.mp4'),
+      });
+    } else {
+      await route.continue();
+    }
+  });
 
   if (options.replay && fs.existsSync(options.replay)) {
     console.log(`Loading replay responses from ${options.replay}...`);
@@ -502,7 +527,7 @@ Options:
 
     const isVideoTurn = query.toLowerCase().includes('video');
     if (isVideoTurn) {
-      console.log('Video turn: ensuring full chronological 8.0s playthrough...');
+      console.log('Video turn: ensuring full chronological 10.0s playthrough...');
       await page.waitForSelector('video', { timeout: 10000 });
       await page.evaluate(async () => {
         const v = document.querySelector('video');
@@ -520,21 +545,21 @@ Options:
         await v.play().catch(() => {});
       });
 
-      // Poll until video finishes playing (8 seconds) or currentTime reaches >= 7.8
+      // Poll until video finishes playing (10 seconds) or currentTime reaches >= 9.8
       const startTime = Date.now();
-      while (Date.now() - startTime < 16000) {
+      while (Date.now() - startTime < 20000) {
         const status = await page.evaluate(() => {
           const v = document.querySelector('video');
           return v ? { currentTime: v.currentTime, ended: v.ended, duration: v.duration } : null;
         });
-        if (status && (status.ended || status.currentTime >= 7.8)) {
+        if (status && (status.ended || status.currentTime >= 9.8)) {
           console.log(`Video playback reached ${status.currentTime.toFixed(1)}s of ${status.duration.toFixed(1)}s!`);
           break;
         }
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(400);
       }
-      console.log('Video finished full 8s playback. Holding 2.0s on final frame...');
-      await page.waitForTimeout(2000);
+      console.log('Video finished full 10s playback. Holding 3.0s on final frame...');
+      await page.waitForTimeout(3000);
     } else {
       console.log('Holding 4.5s for comfortable reading...');
       await page.waitForTimeout(4500);

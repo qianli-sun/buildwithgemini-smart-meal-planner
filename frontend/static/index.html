@@ -452,9 +452,11 @@ function buildNode(id, comps, seen) {
       if (type === "Video" || src.endsWith(".mp4") || src.includes(".mp4")) {
         const v = el("video", "a2img a2video");
         v.src = src;
+        v.preload = "auto";
         v.controls = true;
         v.autoplay = true;
         v.muted = true;
+        v.loop = true;
         v.playsInline = true;
         return v;
       }

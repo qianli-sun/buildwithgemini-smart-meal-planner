@@ -359,7 +359,7 @@ async def generate_dish_video(
     storage_client = get_storage_client()
     bucket = storage_client.bucket(IMAGE_BUCKET_NAME)
 
-    prompt = f"A smooth 6-second appetizing culinary animation of {dish_name}, {visual_style}."
+    prompt = f"A smooth 10-second appetizing culinary animation of {dish_name}, {visual_style}."
 
     try:
         interaction = client.interactions.create(

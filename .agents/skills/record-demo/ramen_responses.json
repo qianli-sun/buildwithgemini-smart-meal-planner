@@ -138,7 +138,6 @@
                       "explicitList": [
                         "dish-title",
                         "dish-video",
-                        "dish-meta",
                         "dish-desc"
                       ]
                     }
@@ -165,20 +164,9 @@
                       "literalString": "Studio Ghibli Miso Ramen Video Preview"
                     },
                     "url": {
-                      "literalString": "https://storage.googleapis.com/smart-meal-planner-images-5805be95/steaming-japanese-miso-ramen-omni.mp4"
+                      "literalString": "https://storage.googleapis.com/smart-meal-planner-images-5805be95/japanese-miso-ramen-omni.mp4"
                     },
                     "usageHint": "mediumFeature"
-                  }
-                }
-              },
-              {
-                "id": "dish-meta",
-                "component": {
-                  "Text": {
-                    "text": {
-                      "literalString": "⏱ Animation: 8.0s · 🎥 Studio Ghibli Culinary Style · 24 FPS HD"
-                    },
-                    "usageHint": "caption"
                   }
                 }
               },
@@ -187,7 +175,7 @@
                 "component": {
                   "Text": {
                     "text": {
-                      "literalString": "Vibrant Studio Ghibli anime style featuring steaming miso broth, tender chashu pork, narutomaki, and cozy authentic ramen shop atmosphere."
+                      "literalString": "Vibrant Studio Ghibli anime style featuring simmering savory broth, soft boiled ramen egg, tender pork chashu, and springy noodles lifted with chopsticks."
                     },
                     "usageHint": "body"
                   }

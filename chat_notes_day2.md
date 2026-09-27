@@ -968,6 +968,49 @@ Two suggestions:
 4. **Git Sync**:
    - Pushed all updates to GitHub `main`.
 
+---
+
+### Turn 35: 10-Second Continuous Ghibli Animation, Smooth 12fps GIF, and Zero Parameter Text
+
+#### 👤 User Prompt
+```
+Now the video response from the 2nd demo prompt feels like 5 seconds than 8 seconds. Also, Below the videos, it shows one line of parameters like "Animation: 8 seconds; Style: Studio Ghibli style; 240 FPS high resolution." We don't want these to be user-facing.
+
+Also, each second of the video feels a bit lagged - not as smooth as before.
+```
+
+#### 🤖 Antigravity Response
+1. **Full 10.0-Second Continuous Anime Noodle Animation**:
+   - Generated a brand-new, uninterrupted **10.0-second** video (`10.000s`, 240 frames @ 24fps) using Google's Gemini Omni video model (`gemini-omni-flash-preview`):
+     - **0s – 3s**: Broth simmering with rich miso aroma, tender rolled chashu pork, molten ajitsuke tamago egg, and fragrant scallions.
+     - **4s – 6s**: Wooden chopsticks reaching into the steaming bowl.
+     - **7s – 10s**: Chopsticks lifting the springy, golden noodles out of the soup with drops of savory broth glistening in authentic Studio Ghibli style.
+   - Uploaded the new 10.0-second video to GCS (`japanese-miso-ramen-omni.mp4`).
+   - Extended video playback tracking in `record-agent.js` to ensure the full 10.0 seconds are recorded on screen, followed by a comfortable 3.0-second hold on the final noodle-lift frame (total 13 seconds of video screen time).
+
+2. **Removed Technical Parameters Line**:
+   - Completely deleted the `dish-meta` line (`⏱ Animation: 8.0s · 🎥 Studio Ghibli Culinary Style · 24 FPS HD`) from `ramen_responses.json`.
+   - The response card now contains purely clean, consumer-facing content:
+     - **Title**: *Studio Ghibli Miso Ramen Animation*
+     - **Video**: Full 16:9 cinematic video player
+     - **Description**: *Vibrant Studio Ghibli anime style featuring simmering savory broth, soft boiled ramen egg, tender pork chashu, and springy noodles lifted with chopsticks.*
+
+3. **Restored Butter-Smooth Playback (Fixed Stutter/Lag)**:
+   - **Root Cause Identified**:
+     1. Downsampling 24fps video to 10fps caused uneven telecine judder (`24 / 10 = 2.4` dropped frames alternating between 2 and 3 frames).
+     2. `diff_mode=rectangle` in ffmpeg forced rectangular bounding box updates that froze frames when motion was subtle (e.g. steam plumes).
+     3. Network buffering over HTTP in headless Chromium caused initial decoding hiccups.
+   - **The Solutions**:
+     1. Set GIF frame rate to **12 fps** (`fps=12`). Since `24 / 12 = 2.000` exactly, every GIF frame cleanly displays exactly 2 video frames with zero cadence jitter!
+     2. Removed `diff_mode=rectangle` so all video frames render fully without micro-freezes.
+     3. Intercepted video requests locally in Playwright (`page.route`) to stream directly from disk with zero network latency.
+     4. Applied software rendering flags (`--use-gl=swiftshader`, `--disable-background-timer-throttling`) to ensure steady frame delivery during headless recording.
+   - **Result**: The resulting GIF is silky smooth, sharp, and 16.5 MB (well under GitHub's 25 MB limit).
+
+4. **Git Sync**:
+   - Staged, committed, and pushed all updates to GitHub `main`.
+
+
 
 
 
