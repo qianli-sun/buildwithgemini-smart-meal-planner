@@ -527,47 +527,38 @@ Options:
 
     const isVideoTurn = query.toLowerCase().includes('video');
     if (isVideoTurn) {
-      console.log('Video turn: ensuring full chronological 10.0s playthrough...');
+      console.log('Video turn: ensuring continuous, seamless playback with zero start lag...');
       await page.waitForSelector('video', { timeout: 10000 });
       await page.evaluate(async () => {
         const v = document.querySelector('video');
         if (!v) return;
-        v.removeAttribute('loop');
-        v.loop = false;
         v.muted = true;
-        v.currentTime = 0;
-        if (v.readyState < 3) {
-          await new Promise(r => {
-            v.addEventListener('canplay', r, { once: true });
-            setTimeout(r, 4000);
-          });
-        }
-        await v.play().catch(() => {});
+        if (v.paused) await v.play().catch(() => {});
       });
 
-      // Poll until video finishes playing (10 seconds) or currentTime reaches >= 9.8
+      // Poll until video finishes playing or currentTime reaches near end
       const startTime = Date.now();
-      while (Date.now() - startTime < 20000) {
+      while (Date.now() - startTime < 16000) {
         const status = await page.evaluate(() => {
           const v = document.querySelector('video');
           return v ? { currentTime: v.currentTime, ended: v.ended, duration: v.duration } : null;
         });
-        if (status && (status.ended || status.currentTime >= 9.8)) {
+        if (status && (status.ended || status.currentTime >= (status.duration - 0.3))) {
           console.log(`Video playback reached ${status.currentTime.toFixed(1)}s of ${status.duration.toFixed(1)}s!`);
           break;
         }
-        await page.waitForTimeout(400);
+        await page.waitForTimeout(300);
       }
-      console.log('Video finished full 10s playback. Holding 3.0s on final frame...');
-      await page.waitForTimeout(3000);
+      console.log('Video finished playback. Holding natural 600ms without freezing...');
+      await page.waitForTimeout(600);
     } else {
       console.log('Holding 4.5s for comfortable reading...');
       await page.waitForTimeout(4500);
     }
   }
 
-  // Hold briefly on the final reply so the video doesn't cut off abruptly.
-  await page.waitForTimeout(1000);
+  // Hold briefly on the final reply so the recording doesn't cut off abruptly.
+  await page.waitForTimeout(300);
 
   console.log('\nFinalizing recording...');
   await page.close();

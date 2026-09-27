@@ -1010,6 +1010,44 @@ Also, each second of the video feels a bit lagged - not as smooth as before.
 4. **Git Sync**:
    - Staged, committed, and pushed all updates to GitHub `main`.
 
+---
+
+### Turn 36: Retimed Video Pacing — Graceful Soup Scoop & Zero Start/End Freeze
+
+#### 👤 User Prompt
+```
+Nit-picking - the video looks great. But the middle part of the video where it scoops up the soup etc. is a tiny bit too fast althought it's smooth - can be a little bit slower. The beginning and ending 1 second feels a tiny little bit too long - it feels like the video stopped for one second at the beginning and at the end.
+```
+
+#### 🤖 Antigravity Response
+1. **Slowed Down and Eased the Middle Soup Scooping & Noodle Lift**:
+   - Analyzed the video timeline:
+     - The red Asian soup spoon scooping the savory miso broth (between 1.8s and 3.8s) was previously moving briskly.
+   - Applied advanced FFmpeg motion interpolation (`minterpolate` with bidirectional block motion estimation `mc_mode=aobmc:me_mode=bidir` at 24fps):
+     - Expanded the spoon scooping duration by **+38%** (from 2.0s to 2.8s at 0.72x speed), rendering every drop of broth, green onion, and golden miso sheen in luscious slow-motion clarity.
+     - Eased the chopsticks noodle lift by **+22%** (from 2.7s to 3.3s at 0.82x speed) for a graceful, mouthwatering culinary reveal.
+   - Uploaded the retimed video to GCS (`japanese-miso-ramen-omni.mp4`).
+
+2. **Eliminated the 1-Second Frozen "Stop" at the Beginning**:
+   - **Root causes**:
+     - The video source previously had ~0.8s of still bowl before action began.
+     - In `record-agent.js`, resetting `v.currentTime = 0` caused the browser to pause and buffer on frame 0.
+   - **Fixes**:
+     - Trimmed the idle intro frames so steam and motion are active immediately upon display.
+     - Removed the `currentTime = 0` seek pause in `record-agent.js`—the video now plays instantaneously the exact millisecond the response renders, with the red spoon gliding in at second 1!
+
+3. **Eliminated the Frozen "Stop" at the End**:
+   - **Root causes**:
+     - The video source had ~0.8s of static noodles after the lift.
+     - `record-agent.js` was holding for 3.0s on the frozen final frame after playback finished, plus a 1.0s post-loop wait (4.0s total static freeze).
+   - **Fixes**:
+     - Trimmed the static tail frames from the video.
+     - Reduced the post-video hold in `record-agent.js` from 3000ms down to a natural 600ms, allowing seamless looping rather than freezing on a stopped frame.
+
+4. **Git Sync**:
+   - Staged, committed, and pushed all updates to GitHub `main`.
+
+
 
 
 
