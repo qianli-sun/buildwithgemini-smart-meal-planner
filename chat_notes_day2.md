@@ -825,3 +825,28 @@ Now it looks good! That said, the GIF you created has low resolution. I can bare
    - Updated `demo.gif` and `agent_demo.webm` across the project and `smart-meal-planner/` repo.
    - Staged, committed (`1f6c6ca`), and pushed to GitHub.
 
+---
+
+### Turn 30
+
+#### 👤 User Prompt
+```text
+Now the resolution is great. However, the image and the video both looks very long (the length to width ratio is very large). The aspect ratio is not as good as before I ask you to increase the resolution. Can you improve it?
+```
+
+#### 🤖 Antigravity Response
+1. **Diagnosed Root Cause of Ultra-Wide Media Aspect Ratio**:
+   - In Turn 29, `max-height: 240px; width: 100%;` was added to `.a2img` and `<video>` inside a 950px container, which forced `object-fit: cover` to crop the media into a thin 3.3:1 banner/strip.
+   - The native source assets—the Imagen 3 dish photo (1376x768) and the Google Omni video (1280x720)—are authentic **16:9 widescreen**.
+2. **Restored Cinema 16:9 Aspect Ratio & Balanced Card Geometry**:
+   - Removed `max-height: 240px` and enforced `aspect-ratio: 16 / 9; object-fit: cover; max-width: 100%;` on `.a2img` and `<video>` tags in both `frontend/static/index.html` and `record-agent.js`.
+   - Tuned container width to `max-width: 760px;` and recorder viewport to `1160x860`, giving the chat cards a natural, well-proportioned editorial layout.
+   - Result: The ramen photo and Studio Ghibli video render in full cinematic 16:9 proportion, showing the complete bowl, noodles, chopsticks, and rising steam with zero banner cropping.
+3. **Re-recorded and Mastered High-Res GIF**:
+   - Re-recorded demo with Google Lyria background music.
+   - Mastered high-res `demo.gif` at 920px width (`9.7 MB`) with solid RGB palettes and razor-sharp typography.
+   - Verified frames visually: both the photo card and animated video card have ideal proportions.
+4. **Git Sync**:
+   - Synced `demo.gif` and `agent_demo.webm` to GitHub main (`a01ae91`).
+
+
