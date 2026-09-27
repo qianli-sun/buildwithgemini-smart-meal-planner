@@ -469,3 +469,43 @@ Answer both very intuitively and concisely.
    - Verified end-to-end conversation:
      - Message: *"Hi, what can you do?"* -> Deployed cloud agent rendered A2UI overview card.
      - Multi-turn memory test: *"What did I just ask?"* -> Agent replied: *"You just asked: 'Hi, what can you do?'"*.
+
+---
+
+### Turn 17
+
+#### 👤 User Prompt
+```text
+Here’s the last sub-step (deploy to cloud run):
+
+Lab guide gave two prompts (either/or):
+The Cloud Run service runs as a different service identity than you did locally, so its service account needs roles/aiplatform.user or /chat will error out.
+
+Method 1: 
+The Cloud Run service runs as a different service identity than you did locally, so its service account needs roles/aiplatform.user or /chat will error out. Do this prompt:
+“Deploy the frontend to Cloud Run pointing at my AGENT_ENGINE_RESOURCE_NAME and AGENT_DIRECTORY, and grant the Cloud Run service account roles/aiplatform.user so it can reach the agent.”
+
+OR 
+
+Method 2: run it directly. 
+“gcloud run deploy <your-frontend-name> \
+  --source . \
+  --region <your-region> \
+  --allow-unauthenticated \
+  --set-env-vars="AGENT_ENGINE_RESOURCE_NAME=$AGENT_ENGINE_RESOURCE_NAME,AGENT_DIRECTORY=$AGENT_DIRECTORY"
+
+Feel free to decide which one is more convenient for deploying to cloud run.
+```
+
+#### 🤖 Antigravity Response
+1. **Configured IAM Roles**:
+   - Granted `roles/aiplatform.user` to the default Compute service account (`397009693787-compute@developer.gserviceaccount.com`).
+   - Granted `roles/artifactregistry.writer` to Cloud Build service accounts.
+2. **Built & Deployed Frontend Container to Cloud Run**:
+   - Created a clean container `Dockerfile` and updated `frontend/requirements.txt`.
+   - Deployed service `smart-meal-planner-frontend` to `us-east1` with unauthenticated access enabled:
+     - **Service URL**: `https://smart-meal-planner-frontend-397009693787.us-east1.run.app`
+3. **Validated Production Flow**:
+   - `GET /` returned `HTTP 200 OK` serving the custom chat UI.
+   - `POST /chat` returned `HTTP 200 OK` with live agent reasoning from Vertex AI Reasoning Engine.
+   - Multi-turn session verified: agent correctly recalled previous turn context.
