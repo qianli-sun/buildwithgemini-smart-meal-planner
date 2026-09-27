@@ -527,38 +527,41 @@ Options:
 
     const isVideoTurn = query.toLowerCase().includes('video');
     if (isVideoTurn) {
-      console.log('Video turn: ensuring continuous, seamless playback with zero start lag...');
+      console.log('Video turn: ensuring continuous playback ending cleanly on the noodle lift...');
       await page.waitForSelector('video', { timeout: 10000 });
       await page.evaluate(async () => {
         const v = document.querySelector('video');
         if (!v) return;
+        v.removeAttribute('loop');
+        v.loop = false;
         v.muted = true;
         if (v.paused) await v.play().catch(() => {});
       });
 
-      // Poll until video finishes playing or currentTime reaches near end
+      // Poll until video finishes playing or reaches the final noodle lift frame
       const startTime = Date.now();
       while (Date.now() - startTime < 16000) {
         const status = await page.evaluate(() => {
           const v = document.querySelector('video');
           return v ? { currentTime: v.currentTime, ended: v.ended, duration: v.duration } : null;
         });
-        if (status && (status.ended || status.currentTime >= (status.duration - 0.3))) {
-          console.log(`Video playback reached ${status.currentTime.toFixed(1)}s of ${status.duration.toFixed(1)}s!`);
+        if (status && (status.ended || status.currentTime >= (status.duration - 0.2))) {
+          console.log(`Video reached noodle lift climax at ${status.currentTime.toFixed(1)}s! Pausing cleanly...`);
+          await page.evaluate(() => {
+            const v = document.querySelector('video');
+            if (v) v.pause();
+          });
           break;
         }
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(100);
       }
-      console.log('Video finished playback. Holding natural 600ms without freezing...');
+      console.log('Holding 600ms on the final noodle lift shot before wrapping up...');
       await page.waitForTimeout(600);
     } else {
       console.log('Holding 4.5s for comfortable reading...');
       await page.waitForTimeout(4500);
     }
   }
-
-  // Hold briefly on the final reply so the recording doesn't cut off abruptly.
-  await page.waitForTimeout(300);
 
   console.log('\nFinalizing recording...');
   await page.close();

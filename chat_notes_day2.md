@@ -1047,6 +1047,37 @@ Nit-picking - the video looks great. But the middle part of the video where it s
 4. **Git Sync**:
    - Staged, committed, and pushed all updates to GitHub `main`.
 
+---
+
+### Turn 37: Eliminating Accidental Video Loop / Scene Jump Cut at Demo Conclusion
+
+#### 👤 User Prompt
+```
+One thing - the last second of the video seems to suddenly switch scenes from the chopstick holding up the noodle back to the first second of the video. Is this intentional?
+```
+
+#### 🤖 Antigravity Response
+1. **Root Cause Analysis**:
+   - No, it was **not intentional**.
+   - In `index.html`, HTML `<video>` elements had the `loop` attribute enabled by default.
+   - When the video completed its full 9.7s playthrough and reached the hero noodle lift, the video element immediately looped back to `t = 0.0s` (the starting frame of the broth bowl).
+   - Because the recorder was still capturing for an extra 600ms before finishing, the recording captured those initial ~0.6 seconds of the looping video, causing a sudden, awkward jump cut from the chopsticks back to the empty bowl right before the GIF looped.
+
+2. **The Fix**:
+   - In `record-agent.js`:
+     - Explicitly stripped the `loop` attribute (`v.removeAttribute('loop'); v.loop = false;`).
+     - Added precise playback boundary detection (`status.currentTime >= status.duration - 0.2`).
+     - The moment the chopsticks lift the springy noodles to their peak, the script pauses the video cleanly on that hero frame (`v.pause()`) and holds for 600ms before finalizing.
+   - Result:
+     - The scene **never** abruptly jumps back to the beginning of the video.
+     - The video concludes with complete aesthetic closure on the chopsticks holding the springy noodles.
+     - When the GIF loops, it cleanly restarts at Turn 1 of the chat.
+
+3. **Git Sync**:
+   - Mastered new `agent_demo.webm` and `demo.gif` (14 MB).
+   - Staged, committed, and pushed all updates to GitHub `main`.
+
+
 
 
 
