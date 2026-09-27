@@ -796,3 +796,32 @@ My suggestion:
    - Total demo duration: **32.3 seconds** with 100% correct chronological flow and zero dead waiting.
    - Audio: Scored with Google **Lyria** acoustic soundtrack.
    - Converted to looping `demo.gif` (4.4 MB) and pushed to GitHub.
+
+---
+
+### Turn 29
+
+#### 👤 User Prompt
+```text
+Now it looks good! That said, the GIF you created has low resolution. I can barely read the words. Please fix it.
+```
+
+#### 🤖 Antigravity Response
+1. **Root Cause Analysis of Blurry GIF Text**:
+   - The browser was recorded inside a wide 1280x800 viewport with standard `15px` fonts, meaning characters were only ~8.4px after downscaling.
+   - Standard GIF conversion applied heavy 128-color quantization with Bayer dithering, scattering speckles across small text letterforms.
+   - FFmpeg palette generation split-stream synchronization occasionally marked background text pixels as transparent/white.
+2. **Typography & Layout Overhaul**:
+   - Boosted base root font size from `15px` to `18.5px` (`+23%` larger typography).
+   - Enlarged user/agent chat bubbles (`1.15rem`), titles (`1.5rem` extra bold `800`), recipe metadata, and input field.
+   - Tuned media cards with `max-height: 240px; object-fit: cover` so the dish image, video player, ingredients, badges, and instructions all fit simultaneously on screen without being cut off.
+   - Added smooth auto-scrolling to keep each newly delivered card squarely centered in the viewport.
+3. **High-Resolution, Solid Color GIF Mastering**:
+   - Rendered video at high pixel density (`1120x800`).
+   - Converted using high-resolution 920px width with Lanczos resampling (`flags=lanczos`).
+   - Enabled solid RGB palette mastering (`reserve_transparent=0`) with differential statistics mode (`stats_mode=diff`), ensuring razor-sharp character edges without dither speckling or transparency loss.
+   - Result: Crystal-clear, readable typography at an optimized file size of **11.7 MB** (fast-loading on GitHub).
+4. **Git Sync**:
+   - Updated `demo.gif` and `agent_demo.webm` across the project and `smart-meal-planner/` repo.
+   - Staged, committed (`1f6c6ca`), and pushed to GitHub.
+
