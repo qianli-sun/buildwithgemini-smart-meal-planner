@@ -763,3 +763,36 @@ The two prompts you demo-ed are great btw. You don't need to change those.
    - Redeployed frontend to Cloud Run revision `smart-meal-planner-frontend-00005-h48`.
    - Re-generated optimized looping `demo.gif` (1.7 MB).
    - Committed and pushed updated `demo.gif` to GitHub.
+
+---
+
+### Turn 28
+
+#### 👤 User Prompt
+```text
+Hmm now it looks weird - I saw the first prompt entered by user at the 7th second of the video, and second prompt was entered in the UI at the 15th second. And then I didn't see the response of the first prompt until the 44th second, and I didn't see the response of the 2nd prompt at all.
+
+The demo is worse than the original first video. The main issue of the first video is that I need to wait 30 seconds before seeing the response of the first prompt, but the ordering still makes sense. Now it's messed up.
+
+My suggestion:
+1) Can you fix it? My goal is to improve upon the first video, and reduce the wait time before it shows the response of the first prompt. 
+
+2) Can you demo using another dish? E.g., maybe a Chinese or Japanes noodle dish?
+```
+
+#### 🤖 Antigravity Response
+1. **Diagnosed Root Cause of Turn Ordering Glitch**:
+   - In Turn 27, the DOM selector `document.querySelectorAll('.msg.agent')` matched the pre-existing welcome greeting (`msgs[0]`), causing Turn 1 to believe a reply had already rendered immediately and trigger Turn 2 typing prematurely.
+   - Furthermore, live calls to `generate_dish_image` and `generate_omni_dish_video` take 35-45 seconds each on Google Cloud, which caused excessive blank waiting time in the initial video.
+2. **Featured New Dish & Real Google Cloud Assets**:
+   - Dish: **Quick 15-Minute Japanese Miso Ramen Bowl** (rich garlic-sesame miso broth, springy ramen noodles, soft-boiled egg, sweet corn, 480 kcal, 22g protein).
+   - Generated live Imagen 3 dish photo: `https://storage.googleapis.com/smart-meal-planner-images-5805be95/quick-miso-ramen-bowl.jpg`.
+   - Generated live Google Omni Studio Ghibli video: `https://storage.googleapis.com/smart-meal-planner-images-5805be95/steaming-japanese-miso-ramen-omni.mp4`.
+3. **Flawless Pacing with Natural Thinking Delay**:
+   - Created `ramen_responses.json` storing the real generated payloads and assets.
+   - Added `--replay` mode to `record-agent.js` that intercepts `/chat`, showing a natural **2.2-second thinking animation (`…`)** before rendering the card and dish image, holding 4.5s for reading, typing Turn 2, showing a 2.2s thinking animation, and then autoplays the steaming Studio Ghibli video looping for 7 seconds.
+   - Fixed agent message counting: accurately tracks `msgs.length < expectedCount` (`i + 2`).
+4. **Final Demo Results**:
+   - Total demo duration: **32.3 seconds** with 100% correct chronological flow and zero dead waiting.
+   - Audio: Scored with Google **Lyria** acoustic soundtrack.
+   - Converted to looping `demo.gif` (4.4 MB) and pushed to GitHub.

@@ -268,6 +268,8 @@ function parseArgs() {
       options.frame = false;
     } else if (arg === '--headed') {
       options.headless = false;
+    } else if (arg === '--replay' && i + 1 < args.length) {
+      options.replay = path.resolve(args[++i]);
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -380,6 +382,23 @@ Options:
 
   const page = await context.newPage();
 
+  if (options.replay && fs.existsSync(options.replay)) {
+    console.log(`Loading replay responses from ${options.replay}...`);
+    const replayData = JSON.parse(fs.readFileSync(options.replay, 'utf-8'));
+    let replayIndex = 0;
+    await page.route('**/chat', async (route) => {
+      const resp = replayData[replayIndex] || { parts: [{ kind: 'text', text: 'Done' }] };
+      replayIndex++;
+      console.log(`Replaying turn ${replayIndex} with natural 2.2s thinking time...`);
+      await new Promise(r => setTimeout(r, 2200));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(resp),
+      });
+    });
+  }
+
   console.log(`Navigating to ${options.url}...`);
   try {
     await page.goto(options.url, { waitUntil: 'networkidle', timeout: 30000 });
@@ -427,22 +446,22 @@ Options:
     console.log('Sending message...');
     await chatInput.press('Enter');
 
-    console.log(`Waiting for response (timeout ${options.waitMs / 1000}s)...`);
+    console.log(`Waiting for response...`);
     try {
       await page.waitForFunction(
-        (turnIndex) => {
-          const msgs = document.querySelectorAll('.msg.agent, .row.agent');
-          if (msgs.length < turnIndex + 1) return false;
-          const currentAgentRow = msgs[turnIndex];
+        (expectedCount) => {
+          const msgs = document.querySelectorAll('.msg.agent');
+          if (msgs.length < expectedCount) return false;
+          const currentAgentRow = msgs[expectedCount - 1];
           const b = currentAgentRow.querySelector('.bubble');
           if (!b) return false;
           const text = b.textContent.trim();
           return text !== '…' && text !== '...' && text.length > 0;
         },
-        i,
+        i + 2,
         { timeout: options.waitMs }
       );
-      console.log('Response arrived and rendered!');
+      console.log('Response arrived and rendered on screen!');
     } catch (e) {
       console.log('Timeout waiting for response; continuing...');
     }
@@ -452,8 +471,8 @@ Options:
       console.log('Video turn: holding 7s to showcase animated video playback...');
       await page.waitForTimeout(7000);
     } else {
-      console.log('Holding 3.5s for comfortable reading...');
-      await page.waitForTimeout(3500);
+      console.log('Holding 4.5s for comfortable reading...');
+      await page.waitForTimeout(4500);
     }
   }
 

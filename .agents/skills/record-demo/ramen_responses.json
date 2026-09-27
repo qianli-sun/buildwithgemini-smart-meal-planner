@@ -1,0 +1,190 @@
+[
+  {
+    "parts": [
+      {
+        "kind": "a2ui",
+        "data": {
+          "beginRendering": {
+            "root": "card-root",
+            "surfaceId": "quick-miso-ramen-card"
+          }
+        }
+      },
+      {
+        "kind": "a2ui",
+        "data": {
+          "surfaceUpdate": {
+            "surfaceId": "quick-miso-ramen-card",
+            "components": [
+              {
+                "id": "card-root",
+                "component": {
+                  "Card": {
+                    "child": "col-content"
+                  }
+                }
+              },
+              {
+                "id": "col-content",
+                "component": {
+                  "Column": {
+                    "children": {
+                      "explicitList": [
+                        "dish-image",
+                        "dish-title",
+                        "dish-meta",
+                        "dish-nutrition",
+                        "dish-desc"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "id": "dish-image",
+                "component": {
+                  "Image": {
+                    "fit": "cover",
+                    "altText": {
+                      "literalString": "Quick Miso Ramen Bowl"
+                    },
+                    "url": {
+                      "literalString": "https://storage.googleapis.com/smart-meal-planner-images-5805be95/quick-miso-ramen-bowl.jpg"
+                    },
+                    "usageHint": "mediumFeature"
+                  }
+                }
+              },
+              {
+                "id": "dish-title",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Quick 15-Minute Japanese Miso Ramen"
+                    },
+                    "usageHint": "h2"
+                  }
+                }
+              },
+              {
+                "id": "dish-meta",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Prep: 5 min | Cook: 10 min | Total: 15 min | Tier: Express"
+                    },
+                    "usageHint": "body"
+                  }
+                }
+              },
+              {
+                "id": "dish-nutrition",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Nutrition: 480 kcal · 22g Protein · 58g Carbs · 18g Healthy Fats"
+                    },
+                    "usageHint": "body"
+                  }
+                }
+              },
+              {
+                "id": "dish-desc",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Savory garlic-sesame broth enriched with white miso, springy ramen noodles, soft-boiled ajitsuke tamago, scallions, and sweet corn."
+                    },
+                    "usageHint": "caption"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "parts": [
+      {
+        "kind": "text",
+        "text": "Here is your Studio Ghibli-inspired animation preview for the Japanese Miso Ramen!\n\n🎬 **Preview Video:** https://storage.googleapis.com/smart-meal-planner-images-5805be95/steaming-japanese-miso-ramen-omni.mp4"
+      },
+      {
+        "kind": "a2ui",
+        "data": {
+          "beginRendering": {
+            "surfaceId": "ghibli-ramen-video-card",
+            "root": "card-root"
+          }
+        }
+      },
+      {
+        "kind": "a2ui",
+        "data": {
+          "surfaceUpdate": {
+            "surfaceId": "ghibli-ramen-video-card",
+            "components": [
+              {
+                "id": "card-root",
+                "component": {
+                  "Card": {
+                    "child": "col-content"
+                  }
+                }
+              },
+              {
+                "id": "col-content",
+                "component": {
+                  "Column": {
+                    "children": {
+                      "explicitList": [
+                        "title",
+                        "style-info",
+                        "video-url"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "id": "title",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Studio Ghibli Miso Ramen Preview"
+                    },
+                    "usageHint": "h2"
+                  }
+                }
+              },
+              {
+                "id": "style-info",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Vibrant Studio Ghibli anime style with steaming rich broth and warm cozy lighting."
+                    },
+                    "usageHint": "body"
+                  }
+                }
+              },
+              {
+                "id": "video-url",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Model: Google Omni (gemini-omni-flash-preview) · Region: global"
+                    },
+                    "usageHint": "caption"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]
