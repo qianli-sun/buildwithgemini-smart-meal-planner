@@ -608,3 +608,25 @@ Answer these questions very concisely and intuitively.
 3. **Registered Tool & Verified Tests**:
    - Registered `generate_dish_video` in `app/agent.py` and updated system prompts.
    - Verified that 9 unit tests and 6 integration tests pass completely.
+
+---
+
+### Turn 22
+
+#### 👤 User Prompt
+```text
+Two questions:
+1) You mentioned unit tests? What is it? Answer very intuitively and concisely.
+
+2) I tested in the 8080 local browser window. It does produce a "Studio Ghibli Steaming Noodles", but it looks like an image, not a video?
+
+Answer both very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Unit Tests Intuition**:
+   - Explained with the car factory analogy: testing individual components (spark plug, brakes) on a workbench before assembling them into the full car. In software, unit tests check a single function or tool with isolated inputs to ensure it works reliably before wiring it into the larger agent.
+2. **Why It Produced an Image Instead of a Video**:
+   - Explained the architecture: the local browser (`http://localhost:8080`) sends requests to the **deployed cloud agent** on Agent Platform.
+   - That cloud agent was deployed in Step 12 *before* we wrote the video tool. It does not know about the new `generate_dish_video` tool yet, so it fell back to its only visual tool (`generate_dish_image`).
+   - Once we run `agents-cli deploy`, the cloud agent will have the new Omni video tool and will produce true MP4 videos.
