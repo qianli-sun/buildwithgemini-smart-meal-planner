@@ -672,3 +672,37 @@ Should we fix it?
    - Restarted local server on port 8080.
    - Deployed new Cloud Run revision `smart-meal-planner-frontend-00004-l5q`.
    - Now the video preview displays with a clean, styled recipe card below it instead of raw JSON!
+
+---
+
+### Turn 25
+
+#### 👤 User Prompt
+```text
+Let’s go to step 15 - Share What You Built
+This step has two sub-sections. Let do sub-step 1 first: Record a demo clip.
+# Two small questions:
+1) The lab guide says “It works against either face of your agent — your custom frontend (localhost:8080) or the Playground.” Why are these two the face of my agent?
+2) The lab guide says “First, make sure the UI you want to film is running...” For frontend, is it referring to the redeployed frontend that can be publicly accessed earlier? Also, I thought Playground is just the ADK dev UI, not the frontend webpage?
+# Priority questions:
+1) Record demo clip: Pick 2-3 prompts that exercise best features... Can you do it based on the context of our agent?
+2) Add sound: Choose a music vibe suitable for context. Tell me if you need to redeploy backend or frontend.
+3) Alternate video record method: Decide if necessary or if automated is easier.
+```
+
+#### 🤖 Antigravity Response
+1. **Conceptual Answers**:
+   - Clarified "face of your agent": "face" means the interactive user interface. The ADK dev UI (`localhost:8000`) is the developer cockpit; the custom frontend (`localhost:8080`) is the user-facing web app.
+   - Clarified local vs. Cloud Run: `localhost:8080` is the local instance of the frontend proxy running on the machine, ideal for zero-latency screen capture without internet buffering.
+   - Clarified redeployment: Neither the backend agent nor Cloud Run needed redeployment. Lyria runs locally in the recorder script via Vertex AI `lyria-002`.
+   - Clarified manual vs automated recorder: Both run the exact same `record-agent.js` script under the hood.
+2. **Prompts Chosen**:
+   - Turn 1: `"I have chicken, spinach, and garlic. Suggest a healthy 20-minute recipe."` (Firestore lookup + nutritional breakdown + A2UI card).
+   - Turn 2: `"Generate a vibrant Studio Ghibli style video preview for this garlic chicken dish!"` (Google Omni motion video generation + embedded video player).
+3. **Soundtrack Chosen**:
+   - Model: `lyria-002` on Vertex AI (`us-central1`).
+   - Prompt: `"warm acoustic guitar, gentle cheerful rhythm, cozy light cooking vibe, upbeat lo-fi"`.
+4. **Recorded & Processed**:
+   - Ran `record-agent.js` with 1.7x speed-up and Lyria background score.
+   - Branded "Gemini World Tour" frame overlaid automatically.
+   - Saved high-definition demo to [`agent_demo.webm`](file:///config/Desktop/BuildWithGemini/agent_demo.webm) (2.4 MB, 58 seconds duration).
