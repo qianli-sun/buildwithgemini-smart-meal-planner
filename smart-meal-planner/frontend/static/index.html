@@ -353,7 +353,7 @@ function formatMarkdown(str) {
     .replace(/^- (.*$)/gim, '<div class="md-li">• $1</div>')
     .replace(/\n\n/g, '<div class="md-spacer"></div>')
     .replace(/\n/g, '<br>');
-  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div style="margin: 10px 0;"><video controls autoplay muted loop playsinline style="max-width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" src="$1"></video></div>');
+  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div style="margin: 10px 0;"><video controls autoplay muted playsinline style="max-width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" src="$1"></video></div>');
   return html;
 }
 

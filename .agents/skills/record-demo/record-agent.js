@@ -414,18 +414,18 @@ Options:
     await injectFrame(page, { title: options.title, assets });
     await page.addStyleTag({
       content: `
-        html { font-size: 18px !important; }
+        html { font-size: 16.5px !important; }
         body { -webkit-font-smoothing: antialiased; }
-        .bubble { font-size: 1.12rem !important; line-height: 1.55 !important; }
-        .a2text.a2-h2 { font-size: 1.45rem !important; font-weight: 800 !important; }
-        .a2text.a2-body { font-size: 1.05rem !important; line-height: 1.5 !important; }
-        .a2text.a2-caption { font-size: 1.05rem !important; line-height: 1.5 !important; }
-        .a2card { padding: 1.25rem !important; }
+        .bubble { font-size: 1.05rem !important; line-height: 1.5 !important; }
+        .a2text.a2-h2 { font-size: 1.35rem !important; font-weight: 800 !important; }
+        .a2text.a2-body { font-size: 0.98rem !important; line-height: 1.45 !important; }
+        .a2text.a2-caption { font-size: 0.98rem !important; line-height: 1.45 !important; }
+        .a2card { padding: 1.15rem 1.25rem !important; }
         .a2img { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; margin: 0.5rem 0 !important; }
         video { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; }
-        input { font-size: 1.15rem !important; }
-        form { max-width: 760px !important; }
-        #log { max-width: 760px !important; margin: 0 auto; }
+        input { font-size: 1.1rem !important; }
+        form { max-width: 840px !important; }
+        #log { max-width: 840px !important; margin: 0 auto; }
       `
     });
   };
@@ -493,16 +493,27 @@ Options:
 
     const isVideoTurn = query.toLowerCase().includes('video');
     if (isVideoTurn) {
-      console.log('Video turn: holding 7s to showcase animated video playback...');
-      await page.waitForTimeout(7000);
+      console.log('Video turn: ensuring chronological single playthrough (0s to 3s)...');
+      await page.evaluate(() => {
+        const v = document.querySelector('video');
+        if (v) {
+          v.removeAttribute('loop');
+          v.loop = false;
+          v.currentTime = 0;
+          v.play();
+        }
+      });
+      // The video is 3.0s long. Waiting 3500ms plays it once in chronological order
+      // and holds on the completed frame without looping.
+      await page.waitForTimeout(3500);
     } else {
       console.log('Holding 4.5s for comfortable reading...');
       await page.waitForTimeout(4500);
     }
   }
 
-  // Hold on the final reply so the video doesn't cut off abruptly.
-  await page.waitForTimeout(options.endPadMs);
+  // Hold briefly on the final reply so the video doesn't cut off abruptly.
+  await page.waitForTimeout(1200);
 
   console.log('\nFinalizing recording...');
   await page.close();
