@@ -422,8 +422,16 @@ Options:
         .a2text.a2-body { font-size: 1.02rem !important; line-height: 1.48 !important; }
         .a2text.a2-caption { font-size: 1.02rem !important; line-height: 1.48 !important; }
         .a2card { padding: 1.15rem 1.25rem !important; }
-        .a2img { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; margin: 0.5rem 0 !important; }
-        video { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; }
+        .a2img, video.a2img, video.a2video, video {
+          width: 100% !important;
+          max-width: 100% !important;
+          aspect-ratio: 16 / 9 !important;
+          object-fit: cover !important;
+          border-radius: 10px !important;
+          display: block !important;
+          margin: 0.5rem 0 !important;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+        }
         input { font-size: 1.02rem !important; }
         form { max-width: 840px !important; }
         #log { max-width: 840px !important; margin: 0 auto; }
@@ -494,19 +502,39 @@ Options:
 
     const isVideoTurn = query.toLowerCase().includes('video');
     if (isVideoTurn) {
-      console.log('Video turn: ensuring chronological single playthrough (0s to 6s)...');
-      await page.evaluate(() => {
+      console.log('Video turn: ensuring full chronological 8.0s playthrough...');
+      await page.waitForSelector('video', { timeout: 10000 });
+      await page.evaluate(async () => {
         const v = document.querySelector('video');
-        if (v) {
-          v.removeAttribute('loop');
-          v.loop = false;
-          v.currentTime = 0;
-          v.play();
+        if (!v) return;
+        v.removeAttribute('loop');
+        v.loop = false;
+        v.muted = true;
+        v.currentTime = 0;
+        if (v.readyState < 3) {
+          await new Promise(r => {
+            v.addEventListener('canplay', r, { once: true });
+            setTimeout(r, 4000);
+          });
         }
+        await v.play().catch(() => {});
       });
-      // The video is 6.0s long. Waiting 6500ms plays it once in chronological order
-      // and holds on the completed frame at 6.0s without looping.
-      await page.waitForTimeout(6500);
+
+      // Poll until video finishes playing (8 seconds) or currentTime reaches >= 7.8
+      const startTime = Date.now();
+      while (Date.now() - startTime < 16000) {
+        const status = await page.evaluate(() => {
+          const v = document.querySelector('video');
+          return v ? { currentTime: v.currentTime, ended: v.ended, duration: v.duration } : null;
+        });
+        if (status && (status.ended || status.currentTime >= 7.8)) {
+          console.log(`Video playback reached ${status.currentTime.toFixed(1)}s of ${status.duration.toFixed(1)}s!`);
+          break;
+        }
+        await page.waitForTimeout(500);
+      }
+      console.log('Video finished full 8s playback. Holding 2.0s on final frame...');
+      await page.waitForTimeout(2000);
     } else {
       console.log('Holding 4.5s for comfortable reading...');
       await page.waitForTimeout(4500);

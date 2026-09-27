@@ -272,7 +272,7 @@
   .a2text.a2-h4 { font-size: 0.95rem; font-weight: 600; color: #444; }
   .a2text.a2-body { font-size: 1rem; color: #333; line-height: 1.5; }
   .a2text.a2-caption { font-size: 1rem; color: #555; line-height: 1.5; }
-  .a2img { max-width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 0.5rem 0; }
+  .a2img, video.a2video { max-width: 100%; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 0.5rem 0; }
   .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-size: 1.35rem; line-height: 1; vertical-align: middle; color: var(--accent); }
 </style>
 </head>
@@ -445,9 +445,19 @@ function buildNode(id, comps, seen) {
     }
     case "Divider":
       return el("hr", "a2divider");
+    case "Video":
     case "Image": {
       const src = boundStr(props.url || props.src);
       if (!/^https?:\/\//i.test(src)) return null;
+      if (type === "Video" || src.endsWith(".mp4") || src.includes(".mp4")) {
+        const v = el("video", "a2img a2video");
+        v.src = src;
+        v.controls = true;
+        v.autoplay = true;
+        v.muted = true;
+        v.playsInline = true;
+        return v;
+      }
       const img = el("img", "a2img");
       img.src = src;
       img.alt = boundStr(props.alt) || "";

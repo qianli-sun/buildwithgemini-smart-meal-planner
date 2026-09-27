@@ -108,10 +108,6 @@
   {
     "parts": [
       {
-        "kind": "text",
-        "text": "Here is your Studio Ghibli-inspired animation preview for the Japanese Miso Ramen!\n\n🎬 **Preview Video:** https://storage.googleapis.com/smart-meal-planner-images-5805be95/steaming-japanese-miso-ramen-omni.mp4"
-      },
-      {
         "kind": "a2ui",
         "data": {
           "beginRendering": {
@@ -140,30 +136,58 @@
                   "Column": {
                     "children": {
                       "explicitList": [
-                        "title",
-                        "style-info"
+                        "dish-title",
+                        "dish-video",
+                        "dish-meta",
+                        "dish-desc"
                       ]
                     }
                   }
                 }
               },
               {
-                "id": "title",
+                "id": "dish-title",
                 "component": {
                   "Text": {
                     "text": {
-                      "literalString": "Studio Ghibli Miso Ramen Preview"
+                      "literalString": "Studio Ghibli Miso Ramen Animation"
                     },
                     "usageHint": "h2"
                   }
                 }
               },
               {
-                "id": "style-info",
+                "id": "dish-video",
+                "component": {
+                  "Image": {
+                    "fit": "cover",
+                    "altText": {
+                      "literalString": "Studio Ghibli Miso Ramen Video Preview"
+                    },
+                    "url": {
+                      "literalString": "https://storage.googleapis.com/smart-meal-planner-images-5805be95/steaming-japanese-miso-ramen-omni.mp4"
+                    },
+                    "usageHint": "mediumFeature"
+                  }
+                }
+              },
+              {
+                "id": "dish-meta",
                 "component": {
                   "Text": {
                     "text": {
-                      "literalString": "Vibrant Studio Ghibli anime style with steaming rich broth and warm cozy lighting."
+                      "literalString": "⏱ Animation: 8.0s · 🎥 Studio Ghibli Culinary Style · 24 FPS HD"
+                    },
+                    "usageHint": "caption"
+                  }
+                }
+              },
+              {
+                "id": "dish-desc",
+                "component": {
+                  "Text": {
+                    "text": {
+                      "literalString": "Vibrant Studio Ghibli anime style featuring steaming miso broth, tender chashu pork, narutomaki, and cozy authentic ramen shop atmosphere."
                     },
                     "usageHint": "body"
                   }

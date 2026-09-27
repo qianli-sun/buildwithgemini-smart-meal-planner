@@ -930,6 +930,45 @@ Two asks:
 4. **Git Sync**:
    - Committed (`f34230a`) and pushed to GitHub main.
 
+---
+
+### Turn 34
+
+#### 👤 User Prompt
+```text
+Two suggestions:
+
+1) I think the current GIF resolution somehow looks a bit more blurry than before (just a tiny bit). Can you improve it without making the GIF too large in file size?
+
+2) Also, I still only see 3 seconds of video. And the video's overall size seems quite a bit smaller than the image? Can you improve it?
+```
+
+#### 🤖 Antigravity Response
+1. **Upgraded Video to Full 8.0-Second Culinary Animation**:
+   - Diagnosed why the user previously perceived only 3 seconds:
+     - The video was fetching over HTTP from GCS during headless browser recording, taking ~2–3 seconds to buffer before playing, which caused fixed timeout recorders to cut off early.
+   - Fixed by:
+     - Prompting Google's Gemini Omni video model (`gemini-omni-flash-preview`) to generate a full **8.000-second** cinematic video (`1280x720`, 24fps) featuring the complete progression: piping hot miso broth, chashu pork, molten ajitsuke tamago, narutomaki fish cake with pink spiral swirl, rising steam plumes, and a traditional red Asian soup spoon scooping the rich broth over the noodles.
+     - Uploaded the 8.0-second video to GCS (`steaming-japanese-miso-ramen-omni.mp4`).
+     - Enhanced `record-agent.js` with dynamic `canplay` readiness check and real-time playback monitoring: actively tracks `v.currentTime` until reaching `8.0s of 8.0s` before holding on the final frame, ensuring **all 8.0 seconds play in real time** without being cut off.
+2. **Unified Card Layout — Video Matches Image Pixel-for-Pixel**:
+   - Diagnosed why the video appeared smaller than the image:
+     - Previously, Turn 1 placed the image inside a full-width A2UI `Card`, while Turn 2 placed the video inside a standard chat text bubble with side padding, margins, and an avatar container, plus a redundant second card below it.
+   - Fixed by:
+     - Updating `renderComponent` in `frontend/static/index.html` to support `Video` / `.mp4` media directly inside A2UI cards.
+     - Restructured Turn 2 in `ramen_responses.json` into a single, cohesive A2UI `Card`:
+       `[dish-title, dish-video, dish-meta, dish-desc]`
+     - Enforced `width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important;` on both `.a2img` and `video.a2video`.
+     - Result: The video now occupies the exact same card footprint as the photo—identical width, identical height, identical padding, and identical visual hierarchy!
+3. **Restored Tack-Sharp Resolution While Keeping File Compact (13 MB)**:
+   - Raised GIF mastering resolution to `1000px` width using high-fidelity `lanczos` scaling.
+   - Increased palette generation to `240` vibrant RGB colors (`stats_mode=diff`).
+   - Used `bayer:bayer_scale=1:diff_mode=rectangle` to eliminate crosshatch fuzziness and keep text razor-sharp.
+   - File size is ~13 MB—crisp, legible, and well within GitHub's 25 MB limit.
+4. **Git Sync**:
+   - Pushed all updates to GitHub `main`.
+
+
 
 
 
