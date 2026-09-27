@@ -342,6 +342,8 @@ clearBtn.addEventListener("click", () => {
 function formatMarkdown(str) {
   if (!str) return "";
   let html = str
+    .replace(/<a2ui-json>[\s\S]*?<\/a2ui-json>/gi, "")
+    .replace(/<a2a_datapart_json>[\s\S]*?<\/a2a_datapart_json>/gi, "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/^### (.*$)/gim, '<div class="md-h3">$1</div>')
     .replace(/^## (.*$)/gim, '<div class="md-h2">$1</div>')
@@ -501,8 +503,31 @@ function flattenText(messages) {
 
 function renderReply(msgContext, parts) {
   msgContext.bubble.textContent = "";
-  const texts = parts.filter(p => p && (p.kind === "text" || (!p.kind && p.text))).map(p => p.text || "");
-  const a2ui = parts.filter(p => p && p.kind === "a2ui" && p.data).map(p => p.data);
+  const texts = [];
+  const a2ui = [];
+
+  for (const p of parts) {
+    if (!p) continue;
+    if (p.kind === "a2ui" && p.data) {
+      if (Array.isArray(p.data)) a2ui.push(...p.data);
+      else a2ui.push(p.data);
+    } else if (p.kind === "text" || (!p.kind && p.text)) {
+      let t = p.text || "";
+      const a2uiMatch = /<a2ui-json>([\s\S]*?)<\/a2ui-json>|<a2a_datapart_json>([\s\S]*?)<\/a2a_datapart_json>/i.exec(t);
+      if (a2uiMatch) {
+        const jsonStr = (a2uiMatch[1] || a2uiMatch[2] || "").trim();
+        try {
+          const parsed = JSON.parse(jsonStr);
+          if (Array.isArray(parsed)) a2ui.push(...parsed);
+          else if (parsed && typeof parsed === "object") a2ui.push(parsed.data || parsed);
+        } catch (err) {
+          console.warn("Could not parse a2ui json in frontend", err);
+        }
+        t = t.replace(/<a2ui-json>[\s\S]*?<\/a2ui-json>|<a2a_datapart_json>[\s\S]*?<\/a2a_datapart_json>/gi, "").trim();
+      }
+      if (t) texts.push(t);
+    }
+  }
 
   const textStr = texts.join("\n").trim();
   if (textStr) {

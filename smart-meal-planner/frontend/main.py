@@ -24,7 +24,9 @@ Run:
   python main.py                 # -> http://localhost:8080
 """
 
+import json
 import os
+import re
 import uuid
 
 import google.auth
@@ -142,13 +144,49 @@ async def _get_card(client: httpx.AsyncClient):
     return _card
 
 
+_A2UI_TAG_RE = re.compile(
+    r"<a2ui-json>([\s\S]*?)</a2ui-json>|<a2a_datapart_json>([\s\S]*?)</a2a_datapart_json>"
+)
+
+
+def _process_text_for_a2ui(text: str) -> tuple[str, list[dict]]:
+    """Extract A2UI JSON payloads embedded inside text, returning cleaned text and a2ui parts."""
+    a2ui_parts: list[dict] = []
+    matches = list(_A2UI_TAG_RE.finditer(text))
+    if not matches:
+        return text, []
+
+    for m in matches:
+        json_str = (m.group(1) or m.group(2) or "").strip()
+        try:
+            parsed = json.loads(json_str)
+            if isinstance(parsed, list):
+                for item in parsed:
+                    a2ui_parts.append({"kind": "a2ui", "data": item})
+            elif isinstance(parsed, dict):
+                inner = parsed.get("data", parsed)
+                if isinstance(inner, list):
+                    for item in inner:
+                        a2ui_parts.append({"kind": "a2ui", "data": item})
+                else:
+                    a2ui_parts.append({"kind": "a2ui", "data": inner})
+        except Exception:
+            pass
+
+    cleaned_text = _A2UI_TAG_RE.sub("", text).strip()
+    return cleaned_text, a2ui_parts
+
+
 def _extract_parts(parts: list) -> list[dict]:
     """Turn A2A response parts into structured parts for the chat UI."""
     out: list[dict] = []
     for p in parts:
         if isinstance(p, dict):
             if "text" in p and p["text"]:
-                out.append({"kind": "text", "text": p["text"]})
+                clean_text, extra_a2ui = _process_text_for_a2ui(p["text"])
+                if clean_text:
+                    out.append({"kind": "text", "text": clean_text})
+                out.extend(extra_a2ui)
             elif "data" in p:
                 d = p["data"]
                 if isinstance(d, dict):
@@ -167,7 +205,10 @@ def _extract_parts(parts: list) -> list[dict]:
         root = getattr(p, "root", p)
         text_val = getattr(root, "text", None)
         if text_val:
-            out.append({"kind": "text", "text": text_val})
+            clean_text, extra_a2ui = _process_text_for_a2ui(text_val)
+            if clean_text:
+                out.append({"kind": "text", "text": clean_text})
+            out.extend(extra_a2ui)
         elif getattr(root, "data", None) is not None:
             data_val = root.data
             meta = getattr(root, "metadata", None) or {}

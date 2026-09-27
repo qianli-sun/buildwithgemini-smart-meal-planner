@@ -650,3 +650,25 @@ Sounds good. Let's redeploy the backend agent to Agent Platform first, and then 
    - Verified that 100% of traffic is live at:
      `https://smart-meal-planner-frontend-397009693787.us-east1.run.app`
    - Frontend now includes the `🎥 Ghibli Dish Video` quick chip and native embedded HTML5 `<video controls>` rendering for generated MP4 files.
+
+---
+
+### Turn 24
+
+#### 👤 User Prompt
+```text
+I tested in the public Cloud Run URL. It does generate a video successfully, but below the video it shows a long JSON text: "<a2ui-json> ... </a2ui-json>"
+Should we fix it?
+```
+
+#### 🤖 Antigravity Response
+1. **Root Cause Analysis**:
+   - The `<a2ui-json>` block was raw A2UI card definition JSON (containing `beginRendering`, `surfaceUpdate`, `Card`, `Column`, `Text` components) emitted alongside the video link.
+   - Because the text was returned with embedded `<a2ui-json>...</a2ui-json>` tags, the frontend escaped the HTML tags and printed the JSON as raw text instead of rendering it as an interactive card.
+2. **Fixed Double-Layer Parsing & Rendering**:
+   - **FastAPI Proxy (`main.py`)**: Added regex extraction to identify `<a2ui-json>` blocks in text parts, parse the JSON into structured A2UI parts, and strip the raw tags from the text stream.
+   - **Chat UI (`index.html`)**: Added fallback regex parsing in `renderReply` to capture any embedded A2UI JSON and draw it via `renderSurface`, while ensuring `formatMarkdown` strips any lingering tags.
+3. **Redeployed to Cloud Run**:
+   - Restarted local server on port 8080.
+   - Deployed new Cloud Run revision `smart-meal-planner-frontend-00004-l5q`.
+   - Now the video preview displays with a clean, styled recipe card below it instead of raw JSON!
