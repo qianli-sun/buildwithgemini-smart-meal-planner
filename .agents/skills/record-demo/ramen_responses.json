@@ -95,7 +95,7 @@
                     "text": {
                       "literalString": "Savory garlic-sesame broth enriched with white miso, springy ramen noodles, soft-boiled ajitsuke tamago, scallions, and sweet corn."
                     },
-                    "usageHint": "caption"
+                    "usageHint": "body"
                   }
                 }
               }
@@ -141,8 +141,7 @@
                     "children": {
                       "explicitList": [
                         "title",
-                        "style-info",
-                        "video-url"
+                        "style-info"
                       ]
                     }
                   }
@@ -167,17 +166,6 @@
                       "literalString": "Vibrant Studio Ghibli anime style with steaming rich broth and warm cozy lighting."
                     },
                     "usageHint": "body"
-                  }
-                }
-              },
-              {
-                "id": "video-url",
-                "component": {
-                  "Text": {
-                    "text": {
-                      "literalString": "Model: Google Omni (gemini-omni-flash-preview) · Region: global"
-                    },
-                    "usageHint": "caption"
                   }
                 }
               }

@@ -418,8 +418,8 @@ Options:
         body { -webkit-font-smoothing: antialiased; }
         .bubble { font-size: 1.12rem !important; line-height: 1.55 !important; }
         .a2text.a2-h2 { font-size: 1.45rem !important; font-weight: 800 !important; }
-        .a2text.a2-body { font-size: 1.08rem !important; }
-        .a2text.a2-caption { font-size: 0.95rem !important; }
+        .a2text.a2-body { font-size: 1.05rem !important; line-height: 1.5 !important; }
+        .a2text.a2-caption { font-size: 1.05rem !important; line-height: 1.5 !important; }
         .a2card { padding: 1.25rem !important; }
         .a2img { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; margin: 0.5rem 0 !important; }
         video { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; }
