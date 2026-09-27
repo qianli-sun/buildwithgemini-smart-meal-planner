@@ -1,198 +1,132 @@
+# 🥗 SmartMeal Planner
+
+> An intelligent, agentic meal-planning assistant powered by **Google Gemini**, **Agent Development Kit (ADK)**, and **Google Cloud**. It adapts to busy daily schedules, curates healthy recipes from pantry staples, computes nutritional macros, and generates animated Studio Ghibli dish previews.
+
 <div align="center">
 
-<img src="assets/build-with-gemini-banner.png" alt="Build with Gemini" width="100%" />
+![SmartMeal Planner Demo](demo.gif)
 
-# 🚀 Build with Gemini · Track 3
-
-### The starter kit for Track 3 of the Build with Gemini World Tour, and a showcase of what participants built with it.
-
-Clone this repo, open [Antigravity](https://antigravity.google), and build your own agent-first app on Google Cloud. Every project in the [gallery below](#-featured-projects) was built the same way: prototyped with Antigravity and `agents-cli`, equipped with Memory, tools, and storage, deployed to Agent Platform, and given a face on Cloud Run.
-
-<br/>
-
-![Build with Gemini](https://img.shields.io/badge/Build%20with%20Gemini-World%20Tour-4285F4?logo=google&logoColor=white)
-![Track 3](https://img.shields.io/badge/Track%203-Agent--First%20Apps-EA4335)
-![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Agent%20Platform-4285F4?logo=googlecloud&logoColor=white)
-![Built with ADK](https://img.shields.io/badge/Built%20with-ADK%20%2B%20agents--cli-34A853)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
-![Projects](https://img.shields.io/badge/Projects-8-blue)
-
-<sub>📖 <a href="https://cszhu.github.io/build-with-gemini/">Lab Guide</a> · 🛠️ <a href="https://google.github.io/agents-cli/guide/getting-started/">agents-cli</a> · 🤖 <a href="https://google.github.io/adk-docs/">ADK</a></sub>
+*Screen recording of SmartMeal Planner in action: Firestore recipe search, A2UI card rendering, and Google Omni video generation with Lyria instrumental soundtrack.*
 
 </div>
 
 ---
 
-## 📚 Table of Contents
+## 📖 Overview
 
-- [🧩 Anatomy of a Track 3 Project](#-anatomy-of-a-track-3-project)
-- [📂 Featured Projects](#-featured-projects)
-  - [🛍️ Commerce & Marketplace Agents](#️-commerce--marketplace-agents)
-  - [🍳 Food & Recipe Agents](#-food--recipe-agents)
-  - [✈️ Travel & Local Agents](#️-travel--local-agents)
-  - [💪 Health, Fitness & Wellness Agents](#-health-fitness--wellness-agents)
-  - [📚 Learning & Knowledge Agents](#-learning--knowledge-agents)
-  - [🎨 Creative & Media Agents](#-creative--media-agents)
-  - [🏢 Productivity & Enterprise Agents](#-productivity--enterprise-agents)
-  - [🧪 Experimental & Other](#-experimental--other)
-- [🧠 What's in this Repo](#-whats-in-this-repo)
-- [🧰 Build Your Own](#-build-your-own)
-- [📚 Resources](#-resources)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+**SmartMeal Planner** helps remote professionals eat healthier without spending hours planning or cooking. By combining conversational reasoning with real-time cloud data and multimodal generation, the agent:
+- Understands ingredient availability and dietary constraints (e.g. quick <20m dinners, high protein, low sodium).
+- Queries a curated **Cloud Firestore** database for grounded recipe steps and ingredients.
+- Persists user preferences and dietary habits across conversations with **Vertex AI Memory Bank**.
+- Accurately computes calories, macronutrient splits, and micronutrient totals.
+- Generates photorealistic dish photography (**Imagen 3**) and animated cooking video previews (**Google Omni** `gemini-omni-flash-preview`).
+- Renders responsive **A2UI** interactive recipe cards and streams replies over the **A2A** protocol.
 
 ---
 
-## 🧩 Anatomy of a Track 3 Project
+## 🏗️ Architecture & Google Cloud Services
 
-Every app in this collection is built from the same set of Google Cloud building blocks introduced in the lab. Once you understand this shape, you can read any project here at a glance:
+SmartMeal Planner is built entirely on Google Cloud's agentic stack:
 
-| Layer | What it does | Powered by |
-|---|---|---|
-| 🤖 **The Agent** | The core reasoning loop | [ADK](https://google.github.io/adk-docs/) + [`agents-cli`](https://google.github.io/agents-cli/guide/getting-started/), scaffolded with [Antigravity](https://antigravity.google) |
-| 🧠 **Memory** | Remembers facts across sessions | [Agent Platform Memory Bank](https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/memory-bank) |
-| 🗄️ **Structured data** | Inventory, records, lists | [Firestore](https://console.cloud.google.com/firestore) |
-| 🖼️ **Files & blobs** | Images, media, assets | [Cloud Storage](https://console.cloud.google.com/storage) |
-| 🔧 **Tools** | Take real actions and fetch real data | ADK function tools |
-| 🎨 **Media generation** | Creates images (and video) on demand | `gemini-3.1-flash-lite-image` (Nano Banana 2 Lite) · Omni (video) |
-| 🧪 **Code sandbox** | Safely runs generated code | Agent Platform code execution |
-| 🪟 **Agent-first UI** | Cards and tables instead of plain text | [A2UI](https://adk.dev/integrations/a2ui/) |
-| 🌐 **Frontend** | A shareable web face | FastAPI proxy on [Cloud Run](https://cloud.google.com/run) |
-
----
-
-## 📂 Featured Projects
-
-A showcase of what workshop participants built with this lab. Entries are added here from the swag and gallery submission form after each event, so the categories below start empty and fill in over time. Browse them for inspiration, or [submit your own](#-contributing) once you've published your project with the `publish-to-github` skill.
-
-<!--
-Add one entry per project, in this format:
-- 🌿 **[Project Name](https://github.com/their-handle/their-repo)**: one-line description of what it does. <br/> <sub>by [@handle](https://github.com/handle)</sub>
-
-Bump the "Projects" badge count at the top when you add one.
--->
-
-### 🛍️ Commerce & Marketplace Agents
-
-### 🍳 Food & Recipe Agents
-
-- 🥫 **[Smart Pantry Recipe Concierge](https://github.com/matthewrose/buildwithgemini-smart-pantry-recipe-concierge)**: Tracks your pantry and recommends recipes grounded in a real recipe corpus. <br/> <sub>by [@matthewrose](https://github.com/matthewrose)</sub>
-
-### ✈️ Travel & Local Agents
-
-- ⛈️ **[SafeStageWX](https://github.com/felix1028/buildwithgemini-safestagewx)**: An agentic mobile app that helps event planners identify weather threats and climate risks for an event given its date and location, providing tailored preparedness timelines from months out down to hourly day-of forecasts. <br/> <sub>by [@felix1028](https://github.com/felix1028)</sub>
-- 🌇 **[Sidewalk & Sun](https://github.com/OlafHaalstra/buildwithgemini-sidewalk-and-sun)**: Recommends sunny or shaded NYC spots from a curated 500-venue corpus, plotted on an interactive map. <br/> <sub>by [@OlafHaalstra](https://github.com/OlafHaalstra)</sub>
-
-### 💪 Health, Fitness & Wellness Agents
-
-- 🏊 **[TriCoach AI](https://github.com/common-aman/buildwithgemini-tricoach-ai)**: A triathlon coach that logs workouts, computes training zones, and generates motivational visuals. <br/> <sub>by [@common-aman](https://github.com/common-aman)</sub>
-
-### 📚 Learning & Knowledge Agents
-
-- 🎤 **[Interview Coach (PrepPal)](https://github.com/VineethBaradi/buildwithgemini-interview-coach)**: A mock-interview coach that runs LLM-driven practice sessions from a Firestore question bank and gives performance feedback. <br/> <sub>by [@VineethBaradi](https://github.com/VineethBaradi)</sub>
-
-### 🎨 Creative & Media Agents
-
-### 🏢 Productivity & Enterprise Agents
-
-- 🔧 **[GitCraft](https://github.com/fpobletemu/buildwithgemini-gitcraft)**: A developer git assistant that inspects your repo and drafts Conventional-Commits-style messages, grounded in a commit-style guide. <br/> <sub>by [@fpobletemu](https://github.com/fpobletemu)</sub>
-- 🖥️ **[IT Helpdesk Agent](https://github.com/NaweedAhmadi/buildwithgemini-it-helpdesk-agent)**: An IT support assistant that answers from a knowledge base and remembers context across sessions, with a ticket dashboard UI. <br/> <sub>by [@NaweedAhmadi](https://github.com/NaweedAhmadi)</sub>
-
-### 🧪 Experimental & Other
-
-- 🃏 **[Poker Agent](https://github.com/jakecho1108/buildwithgemini-poker-agent)**: A poker trainer with a real 800-iteration Monte Carlo equity engine and strategy tips grounded in a poker playbook. <br/> <sub>by [@jakecho1108](https://github.com/jakecho1108)</sub>
+| Component | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Agent Reasoning Engine** | **Google ADK** & **Vertex AI Agent Runtime** | Core ReAct agent loop orchestrated via `agents-cli` on Gemini models |
+| **Long-Term Memory** | **Vertex AI Memory Bank** | Cross-session memory recalling dietary preferences, allergies, and kitchen equipment |
+| **Structured Database** | **Cloud Firestore** | Stores indexed recipes (`recipes` collection) and user favorites (`user_favorites`) |
+| **Media Storage** | **Google Cloud Storage** | Dedicated public media bucket hosting generated recipe images and MP4 preview clips |
+| **Image Generation** | **Imagen 3** (`imagen-3.0-generate-002`) | Creates high-definition dish presentation photography |
+| **Video Generation** | **Google Omni** (`gemini-omni-flash-preview`) | Generates animated culinary videos with motion and atmosphere |
+| **Rich Card UI** | **A2UI** (`after_model_callbacks`) | Emits declarative cards for ingredients, timing badges, and macro charts |
+| **Web Frontend** | **FastAPI** + **Cloud Run** | Lightweight asynchronous web proxy and responsive chat interface communicating via A2A SSE |
 
 ---
 
-## 🧠 What's in this Repo
+## 🛠️ Implemented Agent Tools
 
-The `.agents/` folder teaches Antigravity how to build agents on Google Cloud.
+The agent's capabilities are implemented in Python in [`app/tools.py`](smart-meal-planner/app/tools.py) and registered with the root agent in [`app/agent.py`](smart-meal-planner/app/agent.py):
 
-### Skills
+- **`query_recipes`**: Searches Firestore for dishes matching dietary tags, maximum preparation/cook times, and available pantry items.
+- **`save_favorite_recipe`**: Persists bookmarked recipes and custom notes into the user's Firestore profile.
+- **`calculate_meal_nutrition`**: Computes calorie counts, macronutrient distribution (protein, carbohydrates, healthy fats), and key micronutrients.
+- **`generate_dish_image`**: Invokes Imagen 3 on Vertex AI to produce photo previews of planned dishes, uploading assets directly to Cloud Storage.
+- **`generate_dish_video`**: Calls Google Omni in the global region to generate animated cooking previews, saving them as agent artifacts and returning streaming URLs.
+- **`PreloadMemoryTool` & Memory Callback**: Automatically retrieves past memories at session start and synthesizes new user preferences at turn completion.
 
-A **skill** is a bundle of instructions that loads automatically when it's relevant, so the agent gets the workflow right in fewer steps instead of rediscovering it each time.
-
-| Skill | What it does |
-| --- | --- |
-| [`pick-your-agent-project`](.agents/skills/pick-your-agent-project/SKILL.md) | Brainstorm your app idea and write a project brief |
-| [`troubleshoot-lab-setup`](.agents/skills/troubleshoot-lab-setup/SKILL.md) | Verify your environment and fix common setup errors |
-| [`memory-bank-setup`](.agents/skills/setup-memory-bank/SKILL.md) | Add cross-session memory to your agent with Vertex AI Memory Bank |
-| [`enable-a2ui`](.agents/skills/enable-a2ui/SKILL.md) | Make your agent reply with rich UI cards (A2UI) in the ADK dev UI |
-| [`build-agent-frontend`](.agents/skills/build-agent-frontend/SKILL.md) | Generate a FastAPI chat frontend and ship it to Cloud Run |
-| [`record-demo`](.agents/skills/record-demo/SKILL.md) | Record a branded demo video of your agent, with an optional AI soundtrack |
-| [`publish-to-github`](.agents/skills/publish-to-github/SKILL.md) | Publish your finished project to your own GitHub and submit it for swag |
-
-### Pre-configured tools (MCP)
-
-[`.agents/mcp_config.json`](.agents/mcp_config.json) wires up two [Model Context Protocol](https://modelcontextprotocol.io/) servers that authenticate with your gcloud credentials, so the agent can look things up instead of guessing:
-
-- **Firebase**: work directly with Firestore and other Firebase services
-- **Google Developer Knowledge**: grounded access to Google's official docs (Cloud, Firebase, ADK, Agent Platform)
-
-### Layout
-
-```text
-.agents/
-├── mcp_config.json    # Firebase + Developer Knowledge MCP servers
-├── rules/             # workspace rules (only deploy when asked)
-└── skills/            # the workshop skills listed above
-```
+### 📌 Planned / Future Enhancements
+*(Marked as planned, not yet implemented)*:
+- **Google Calendar Integration**: Auto-detecting busy calendar days to dynamically suggest 15-minute express recipes on meeting-heavy days.
+- **Barcode & Receipt Scanning**: Vision-based pantry inventory ingestion from store receipts.
 
 ---
 
-## 🧰 Build Your Own
+## 🚀 Running the Project Locally
 
-The full, step-by-step walkthrough lives on the **[lab guide](https://cszhu.github.io/build-with-gemini/)**. This is the short version.
+Follow these instructions to run the agent and frontend on your local development machine.
 
-**Prerequisites** (the lab workstation comes with all of this pre-installed; you'll need it if you're running on your own machine):
+### Prerequisites
 
-- A **Google Cloud project** with billing enabled
-- **[Antigravity](https://antigravity.google)** (`agy`), the coding agent that loads the skills above
-- **[agents-cli](https://google.github.io/agents-cli/guide/getting-started/)**, built on the [Agent Development Kit (ADK)](https://google.github.io/adk-docs/)
-- Authenticated gcloud: `gcloud auth login` and `gcloud auth application-default login`
-- A personal **GitHub account** for the final publish-and-submit step
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) package manager
+- [Google Cloud SDK (`gcloud`)](https://cloud.google.com/sdk/docs/install) authenticated to your GCP project:
+  ```bash
+  gcloud auth login
+  gcloud auth application-default login
+  gcloud config set project <YOUR_GCP_PROJECT_ID>
+  ```
+- Google Agents CLI:
+  ```bash
+  uv tool install google-agents-cli
+  ```
 
-**Quickstart:**
+### 1. Launch the Agent Backend
+
+Navigate to the agent directory and install dependencies:
 
 ```bash
-git clone https://github.com/cszhu/build-with-gemini
-cd build-with-gemini
-agy
+cd smart-meal-planner
+agents-cli install
 ```
 
-On startup, Antigravity scans the `.agents/` folder and loads the skills and tools above automatically. In the AGY prompt:
+Launch the interactive local development playground:
 
-```text
-/skills            # see the installed skills
-/mcp               # confirm the firebase + google-developer-knowledge tools are connected
+```bash
+agents-cli playground
 ```
 
-```text
-Verify my setup.   # runs the troubleshoot-lab-setup skill to check your environment
+The ADK development playground will start locally, allowing you to inspect tool calls, session state, and memory traces.
+
+### 2. Run the Custom Web Frontend
+
+In a separate terminal, navigate to the frontend folder and install requirements:
+
+```bash
+cd frontend
+pip install -r requirements.txt
 ```
 
-Then follow the [lab guide](https://cszhu.github.io/build-with-gemini/) to design, build, deploy, and share your agent, start to finish.
+Set the agent environment variables (pointing to your deployed Agent Runtime resource or local runner):
+
+```bash
+export AGENT_ENGINE_RESOURCE_NAME="projects/<PROJECT_NUMBER>/locations/<REGION>/reasoningEngines/<RESOURCE_ID>"
+export AGENT_DIRECTORY="app"
+python main.py
+```
+
+The web server will start locally and serve the chat interface with full A2UI card support, instant prompt chips, and video streaming.
+
+### 3. Run Automated Tests
+
+Run unit and integration tests with `pytest`:
+
+```bash
+cd smart-meal-planner
+uv run pytest tests/unit tests/integration
+```
 
 ---
 
-## 📚 Resources
+## 📊 Quality & Evaluation
 
-- **[Lab guide](https://cszhu.github.io/build-with-gemini/)**: the step-by-step workshop
-- [Antigravity](https://antigravity.google)
-- [agents-cli](https://google.github.io/agents-cli/guide/getting-started/)
-- [Agent Development Kit (ADK)](https://google.github.io/adk-docs/)
-- [Gemini Enterprise Agent Platform](https://docs.cloud.google.com/gemini-enterprise-agent-platform)
-
----
-
-## 🤝 Contributing
-
-**Built something?** Publish it with the `publish-to-github` skill and submit it through the form it gives you. Submissions get you swag, and standout projects get added to the [Featured Projects](#-featured-projects) gallery above.
-
-**Found a bug?** If you hit a rough edge in a skill or the lab, please [open an issue](https://github.com/cszhu/build-with-gemini/issues).
-
----
-
-## 📄 License
-
-This is not an officially supported Google product and is provided for the Build with Gemini workshop for demonstration purposes only.
+SmartMeal Planner includes automated evaluation datasets and metrics for tracking agent quality:
+- Multi-turn evaluation dataset in `tests/eval/datasets/`.
+- Evaluated against task completion, tool selection accuracy, and grounded response metrics using the `agents-cli eval` suite.

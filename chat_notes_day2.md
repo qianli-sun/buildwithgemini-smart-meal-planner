@@ -706,3 +706,35 @@ This step has two sub-sections. Let do sub-step 1 first: Record a demo clip.
    - Ran `record-agent.js` with 1.7x speed-up and Lyria background score.
    - Branded "Gemini World Tour" frame overlaid automatically.
    - Saved high-definition demo to [`agent_demo.webm`](file:///config/Desktop/BuildWithGemini/agent_demo.webm) (2.4 MB, 58 seconds duration).
+
+---
+
+### Turn 26
+
+#### 👤 User Prompt
+```text
+Now the 2nd sub-step - Turn it into a shareable README
+Below is the suggestion from the lab guide. Please do it and tell me afterwards how it works very concisely and intuitively.
+Suggestion from guide:
+"Generate a README.md for my project. Describe what my agent actually does based on the code in this repo — read app/ and agents-cli-manifest.yaml to see which tools and Google Cloud services are really wired up (Memory Bank, Firestore, Cloud Storage, image generation, A2UI) and list ONLY those. Don't claim a capability the code doesn't implement... Do NOT put any live links to localhost or to ephemeral Cloud URLs... Then convert the demo I recorded with record-demo (the .webm file) to an optimized, looping GIF and embed it near the top with a relative path so it plays inline..."
+```
+
+#### 🤖 Antigravity Response
+1. **Converted `.webm` to Looping `.gif`**:
+   - Used `ffmpeg` with two-pass palette optimization (`palettegen` + `paletteuse`, 12 fps, 720px width, Bayer dithering) to convert `agent_demo.webm` into an optimized 2.0MB looping `demo.gif`.
+   - Copied `demo.gif` to both root and `smart-meal-planner/demo.gif`.
+2. **Generated Comprehensive, Accurate `README.md`**:
+   - Embedded `![SmartMeal Planner Demo](demo.gif)` at the top for automatic GitHub playback.
+   - Listed **only** implemented Google Cloud services and tools:
+     - Vertex AI Agent Runtime & Google ADK (ReAct brain)
+     - Vertex AI Memory Bank (cross-session memory)
+     - Cloud Firestore (recipe catalog and user favorites)
+     - Cloud Storage (`smart-meal-planner-images-5805be95` bucket for media)
+     - Imagen 3 (dish photography)
+     - Google Omni (`gemini-omni-flash-preview` motion video)
+     - A2UI interactive recipe cards
+     - FastAPI A2A streaming chat proxy & Cloud Run
+   - Explicitly marked calendar sync & barcode scanning as "planned, not yet implemented".
+   - Excluded ephemeral Cloud Run / localhost URLs, replacing them with clear local setup/run commands (`agents-cli install`, `agents-cli playground`, `python main.py`, `pytest`).
+3. **Committed & Synced**:
+   - Pushed `README.md` and `demo.gif` to the public GitHub repository (`qianli-sun/buildwithgemini-smart-meal-planner`).
