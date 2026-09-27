@@ -849,4 +849,32 @@ Now the resolution is great. However, the image and the video both looks very lo
 4. **Git Sync**:
    - Synced `demo.gif` and `agent_demo.webm` to GitHub main (`a01ae91`).
 
+---
+
+### Turn 31
+
+#### 👤 User Prompt
+```text
+Looks great. Two suggestions:
+1) Right below the 2nd response which shows the ramen video, it outputted the model specifications as well "Model: Google Omni... Region: global" They shouldn't be there as user-facing content
+
+2) I saw you now used two font size for the body writings below the title for both the first response, and the second response. Can you just use one font size for the body, or do you think different font size is Ok here? Feel free to decide here.
+```
+
+#### 🤖 Antigravity Response
+1. **Removed Internal Model Specifications**:
+   - Completely deleted `"Model: Google Omni (gemini-omni-flash-preview) · Region: global"` from the Studio Ghibli video preview card in `ramen_responses.json`.
+   - The card now cleanly presents only the user-relevant title (**Studio Ghibli Miso Ramen Preview**) and aesthetic summary (*Vibrant Studio Ghibli anime style with steaming rich broth and warm cozy lighting.*).
+2. **Unified Card Body Typography**:
+   - Decided to unify all body lines into a single, cohesive font size (`1.05rem` in recorder / `1rem` base).
+   - In the recipe card, set `dish-desc` to `usageHint: "body"` (matching `dish-meta` and `dish-nutrition`).
+   - All three recipe details (prep/cook times, nutritional macros, and flavor description) now render with identical, harmonized font styling.
+3. **Re-recorded & Mastered GIF**:
+   - Re-recorded `agent_demo.webm` with Lyria soundtrack.
+   - Mastered crisp `demo.gif` (9.3 MB, 920px wide) with solid RGB palettes and zero transparency artifacts.
+   - Verified frames visually: both cards look elegant, cohesive, and distraction-free.
+4. **Git Sync**:
+   - Committed and pushed to GitHub main (`d14819c`).
+
+
 
