@@ -876,5 +876,32 @@ Looks great. Two suggestions:
 4. **Git Sync**:
    - Committed and pushed to GitHub main (`d14819c`).
 
+---
+
+### Turn 32
+
+#### 👤 User Prompt
+```text
+Two suggestions:
+1) Video: the video response of the 2nd prompt feels weird. The time length it's played is Ok. But somehow I saw one same frame is played three times? Can you make sure the GIF records the video in chronological order?
+
+2) The font size looks Ok. But now the video looks a bit smaller overall. Can you make the body's font size a tiny bit smaller, so that the video can be a tiny bit larger in the demo video and GIF?
+```
+
+#### 🤖 Antigravity Response
+1. **Identified & Fixed Video Loop Issue (Chronological Order Guaranteed)**:
+   - Diagnosed root cause: The generated Omni video is 3.0 seconds long. In `frontend/static/index.html`, the `<video>` tag had the `loop` attribute, and the recorder held for 7.0 seconds. As a result, the 3-second video finished, rewound to 0s, and replayed 2.3 times, causing the opening frame to be seen three times.
+   - Removed `loop` from the `<video>` tag and programmatically set `loop = false` and `currentTime = 0` during recording.
+   - Tuned video hold time to 3.5 seconds: plays chronologically from start to finish (0.0s steam -> 1.5s noodles lifted with chopsticks -> 3.0s soup spoon scooping broth) and cleanly holds on the completed final frame without looping back.
+2. **Enlarged Media & Sleeker Body Typography**:
+   - Expanded container width from `760px` to `840px`, increasing the physical dimensions of the dish photo and video by ~15% in the recording viewport.
+   - Refined base font size to `16.5px` and body text to `0.98rem`, making the text compact, elegant, and readable while prioritizing the visual hero media.
+3. **Mastered GIF**:
+   - Converted to `demo.gif` at 940px width with Lanczos resampling and solid RGB palette (now 7.3 MB, blazing fast load times).
+   - Extracted verification frames: verified 100% chronological video flow and larger visual presence.
+4. **Git Sync**:
+   - Committed (`f431250`) and pushed to GitHub main.
+
+
 
 
