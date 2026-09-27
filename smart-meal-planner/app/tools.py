@@ -340,6 +340,80 @@ async def generate_dish_image(
         return {"error": f"Failed to generate dish image: {e}"}
 
 
+def _process_video_audio_and_duration(video_bytes: bytes) -> bytes:
+    """Enhance raw Omni video with smooth retiming (>=6s) and Google Lyria acoustic soundtrack."""
+    import shutil
+    import subprocess
+    import tempfile
+
+    if not shutil.which("ffmpeg"):
+        return video_bytes
+
+    audio_path = os.path.join(os.path.dirname(__file__), "assets", "lyria_cozy_soundtrack.aac")
+    if not os.path.exists(audio_path):
+        try:
+            storage_client = get_storage_client()
+            bucket = storage_client.bucket(IMAGE_BUCKET_NAME)
+            blob = bucket.blob("lyria_cozy_soundtrack.aac")
+            if blob.exists():
+                os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+                blob.download_to_filename(audio_path)
+        except Exception:
+            pass
+
+    if not os.path.exists(audio_path):
+        return video_bytes
+
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            in_path = os.path.join(tmpdir, "raw.mp4")
+            out_path = os.path.join(tmpdir, "muxed.mp4")
+            with open(in_path, "wb") as f:
+                f.write(video_bytes)
+
+            raw_dur = 3.0
+            try:
+                probe = subprocess.run(
+                    ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", in_path],
+                    capture_output=True, text=True, timeout=5
+                )
+                val = float(probe.stdout.strip())
+                if val > 0:
+                    raw_dur = val
+            except Exception:
+                pass
+
+            target_dur = 6.0 if raw_dur <= 4.0 else raw_dur
+            pts_factor = target_dur / raw_dur
+
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", in_path,
+                "-stream_loop", "-1",
+                "-i", audio_path,
+                "-filter:v", f"setpts={pts_factor:.2f}*PTS",
+                "-filter:a", f"afade=t=in:st=0:d=0.8,afade=t=out:st={max(0.0, target_dur - 1.5):.2f}:d=1.5,volume=0.7",
+                "-map", "0:v:0",
+                "-map", "1:a:0",
+                "-t", f"{target_dur:.2f}",
+                "-c:v", "libx264",
+                "-preset", "ultrafast",
+                "-crf", "20",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                "-shortest",
+                out_path
+            ]
+            res = subprocess.run(cmd, capture_output=True, timeout=15)
+            if res.returncode == 0 and os.path.exists(out_path) and os.path.getsize(out_path) > 0:
+                with open(out_path, "rb") as f:
+                    return f.read()
+    except Exception:
+        pass
+
+    return video_bytes
+
+
 async def generate_dish_video(
     dish_name: str,
     visual_style: str = "vibrant Studio Ghibli anime style, warm cozy lighting, appetizing food aesthetic",
@@ -390,6 +464,9 @@ async def generate_dish_video(
 
         if not video_bytes:
             return {"error": "No video data returned from Omni video model."}
+
+        # Enhance with Lyria soundtrack and smooth >=6s playback
+        video_bytes = _process_video_audio_and_duration(video_bytes)
 
         slug = re.sub(r"[^a-z0-9]+", "-", dish_name.lower()).strip("-")
         filename = f"{slug}-omni.mp4"

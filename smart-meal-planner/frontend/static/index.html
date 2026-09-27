@@ -274,6 +274,62 @@
   .a2text.a2-caption { font-size: 1rem; color: #555; line-height: 1.5; }
   .a2img, video.a2video { max-width: 100%; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 0.5rem 0; }
   .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-size: 1.35rem; line-height: 1; vertical-align: middle; color: var(--accent); }
+
+  /* Thinking & Activity Status Indicator */
+  .thinking-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 12px;
+    background: #f1f8f3;
+    border: 1px solid #d4ebd8;
+    color: #276230;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .thinking-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #b7dfbe;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .thinking-status {
+    white-space: nowrap;
+    transition: opacity 0.2s ease-in-out;
+  }
+  .thinking-timer {
+    font-size: 0.78rem;
+    color: #4f8558;
+    font-variant-numeric: tabular-nums;
+    background: rgba(46, 125, 50, 0.08);
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    margin-left: 0.2rem;
+  }
+  .a2video-wrapper {
+    position: relative;
+    margin: 0.5rem 0;
+  }
+  .a2video-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: #2e7d32;
+    background: #e8f5e9;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    margin-top: 0.35rem;
+    font-weight: 500;
+    border: 1px solid #c8e6c9;
+  }
 </style>
 </head>
 <body>
@@ -353,7 +409,14 @@ function formatMarkdown(str) {
     .replace(/^- (.*$)/gim, '<div class="md-li">• $1</div>')
     .replace(/\n\n/g, '<div class="md-spacer"></div>')
     .replace(/\n/g, '<br>');
-  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div style="margin: 10px 0;"><video controls autoplay muted playsinline style="max-width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" src="$1"></video></div>');
+
+  // Parse markdown video links [Title](https://...mp4)
+  html = html.replace(/\[([^\]]+)\]\((https:\/\/storage\.googleapis\.com\/[^\s)]+\.mp4)\)/gim, function(m, title, url) {
+    return '<div class="a2video-wrapper"><video controls autoplay muted loop playsinline class="a2img a2video" src="' + url + '"></video><div class="a2video-badge">🎵 Lyria Background Soundtrack • Click video to unmute</div></div>';
+  });
+
+  // Parse standalone MP4 links
+  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div class="a2video-wrapper"><video controls autoplay muted loop playsinline class="a2img a2video" src="$1"></video><div class="a2video-badge">🎵 Lyria Background Soundtrack • Click video to unmute</div></div>');
   return html;
 }
 
@@ -450,6 +513,7 @@ function buildNode(id, comps, seen) {
       const src = boundStr(props.url || props.src);
       if (!/^https?:\/\//i.test(src)) return null;
       if (type === "Video" || src.endsWith(".mp4") || src.includes(".mp4")) {
+        const wrap = el("div", "a2video-wrapper");
         const v = el("video", "a2img a2video");
         v.src = src;
         v.preload = "auto";
@@ -458,7 +522,10 @@ function buildNode(id, comps, seen) {
         v.muted = true;
         v.loop = true;
         v.playsInline = true;
-        return v;
+        wrap.appendChild(v);
+        const badge = el("div", "a2video-badge", "🎵 Lyria Background Soundtrack • Unmute to listen");
+        wrap.appendChild(badge);
+        return wrap;
       }
       const img = el("img", "a2img");
       img.src = src;
@@ -546,22 +613,55 @@ function renderReply(msgContext, parts) {
     msgContext.bubble.innerHTML = formatMarkdown(textStr);
   }
 
+  // Detect any Cloud Storage .mp4 video URL across text and raw parts
+  let mp4Url = null;
+  const mp4Match = /(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/i.exec(textStr);
+  if (mp4Match) mp4Url = mp4Match[1];
+
   if (a2ui.length) {
+    let targetCard = null;
     if (!textStr) {
       msgContext.bubble.classList.add("rich");
+      targetCard = msgContext.bubble;
     } else {
       const cardBubble = el("div", "bubble rich");
       msgContext.container.appendChild(cardBubble);
-      if (!renderSurface(a2ui, cardBubble)) {
-        cardBubble.innerHTML = formatMarkdown(flattenText(a2ui) || "(no card content)");
+      targetCard = cardBubble;
+    }
+
+    if (!renderSurface(a2ui, targetCard)) {
+      targetCard.innerHTML = formatMarkdown(flattenText(a2ui) || "(no card content)");
+    }
+
+    // Auto-inject video into card if the agent returned a video URL but omitted it from A2UI components
+    if (mp4Url && targetCard && !targetCard.querySelector("video")) {
+      const cardCol = targetCard.querySelector(".a2col") || targetCard.querySelector(".a2card") || targetCard;
+      const wrap = el("div", "a2video-wrapper");
+      wrap.style.margin = "0.75rem 0";
+      const v = el("video", "a2img a2video");
+      v.src = mp4Url;
+      v.preload = "auto";
+      v.controls = true;
+      v.autoplay = true;
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      wrap.appendChild(v);
+      const badge = el("div", "a2video-badge", "🎵 Lyria Background Soundtrack • Unmute to listen");
+      wrap.appendChild(badge);
+
+      const firstText = cardCol.querySelector(".a2text");
+      if (firstText && firstText.nextSibling) {
+        cardCol.insertBefore(wrap, firstText.nextSibling);
+      } else {
+        cardCol.appendChild(wrap);
       }
-      log.scrollTop = log.scrollHeight;
-      return;
     }
-    if (!renderSurface(a2ui, msgContext.bubble)) {
-      msgContext.bubble.innerHTML = formatMarkdown(flattenText(a2ui) || "(no card content)");
-    }
+
+    log.scrollTop = log.scrollHeight;
+    return;
   }
+
   if (!msgContext.bubble.childNodes.length && !msgContext.bubble.textContent) {
     msgContext.bubble.textContent = "(no response)";
   }
@@ -575,8 +675,68 @@ form.addEventListener("submit", async (ev) => {
   const userRow = createMessageRow("user");
   userRow.bubble.textContent = text;
   input.value = "";
+
   const agentRow = createMessageRow("agent");
-  agentRow.bubble.textContent = "…";
+  
+  // Dynamic Claude-style thinking and activity indicator
+  const thinkingBox = el("div", "thinking-box");
+  const spinner = el("div", "thinking-spinner");
+  const statusSpan = el("span", "thinking-status");
+  const timerSpan = el("span", "thinking-timer", "0.0s");
+  thinkingBox.appendChild(spinner);
+  thinkingBox.appendChild(statusSpan);
+  thinkingBox.appendChild(timerSpan);
+  agentRow.bubble.appendChild(thinkingBox);
+
+  const lower = text.toLowerCase();
+  let stages = [
+    { at: 0, text: "🥗 Thinking..." },
+    { at: 2.5, text: "🍳 Reviewing meal options..." },
+    { at: 5.5, text: "✍️ Compiling your response..." }
+  ];
+
+  if (lower.includes("video") || lower.includes("animation")) {
+    stages = [
+      { at: 0, text: "🎨 Visualizing culinary scene..." },
+      { at: 2.2, text: "🎥 Generating animation with Gemini Omni..." },
+      { at: 6.8, text: "🎵 Scoring with Lyria background music..." },
+      { at: 10.5, text: "✨ Finalizing video preview card..." }
+    ];
+  } else if (lower.includes("image") || lower.includes("photo") || lower.includes("picture")) {
+    stages = [
+      { at: 0, text: "🥗 Thinking..." },
+      { at: 2.0, text: "🎨 Generating dish preview with Imagen 3..." },
+      { at: 6.0, text: "✨ Assembling recipe card..." }
+    ];
+  } else if (lower.includes("grocery") || lower.includes("shopping") || lower.includes("ingredient")) {
+    stages = [
+      { at: 0, text: "🛒 Reviewing ingredients..." },
+      { at: 2.0, text: "📦 Grouping items by supermarket aisle..." },
+      { at: 5.0, text: "✨ Formatting grocery checklist..." }
+    ];
+  } else if (lower.includes("schedule") || lower.includes("express") || lower.includes("meeting") || lower.includes("calendar")) {
+    stages = [
+      { at: 0, text: "📅 Checking calendar constraints..." },
+      { at: 2.0, text: "🔍 Searching recipes for target cook time..." },
+      { at: 5.0, text: "✨ Balancing nutrition macros..." }
+    ];
+  }
+
+  statusSpan.textContent = stages[0].text;
+  const startTime = Date.now();
+  const timerInterval = setInterval(() => {
+    const elapsed = (Date.now() - startTime) / 1000;
+    timerSpan.textContent = elapsed.toFixed(1) + "s";
+    for (let i = stages.length - 1; i >= 0; i--) {
+      if (elapsed >= stages[i].at) {
+        if (statusSpan.textContent !== stages[i].text) {
+          statusSpan.textContent = stages[i].text;
+        }
+        break;
+      }
+    }
+  }, 100);
+
   try {
     const res = await fetch("/chat", {
       method: "POST",
@@ -587,8 +747,10 @@ form.addEventListener("submit", async (ev) => {
     let data;
     try { data = JSON.parse(raw); }
     catch { throw new Error(`Server returned non-JSON (HTTP ${res.status}). ${raw.slice(0, 300)}`); }
+    clearInterval(timerInterval);
     renderReply(agentRow, data.parts || []);
   } catch (e) {
+    clearInterval(timerInterval);
     agentRow.bubble.textContent = "Error: " + e.message;
   }
 });
