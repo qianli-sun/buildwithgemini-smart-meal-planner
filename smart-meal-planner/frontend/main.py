@@ -121,37 +121,59 @@ _contexts: dict[str, str] = {}
 _card: AgentCard | None = None
 
 
-async def _get_card(client: httpx.AsyncClient) -> AgentCard:
+async def _get_card(client: httpx.AsyncClient):
     global _card
     if _card is None:
         resp = await client.get(A2A_CARD_URL)
         resp.raise_for_status()
-        card = AgentCard(**resp.json())
-        # Agent Runtime does not serve a public card URL, so point the client at
-        # the passthrough base for message sends.
-        card.url = A2A_BASE
+        data = resp.json()
+        try:
+            from a2a.types import AgentCard as ProtoAgentCard
+            from google.protobuf.json_format import ParseDict
+
+            card = ProtoAgentCard()
+            ParseDict(data, card, ignore_unknown_fields=True)
+            if hasattr(card, "url"):
+                card.url = A2A_BASE
+        except Exception:
+            card = AgentCard(**data)
+            card.url = A2A_BASE
         _card = card
     return _card
 
 
 def _extract_parts(parts: list) -> list[dict]:
-    """Turn A2A response parts into structured parts for the chat UI.
-
-    Text parts pass through as {"kind": "text"}. A2UI data parts (tagged
-    application/json+a2ui) become {"kind": "a2ui", "data": <message>} so the UI
-    renders the card; each data part is one A2UI message (beginRendering or
-    surfaceUpdate).
-    """
+    """Turn A2A response parts into structured parts for the chat UI."""
     out: list[dict] = []
     for p in parts:
+        if isinstance(p, dict):
+            if "text" in p and p["text"]:
+                out.append({"kind": "text", "text": p["text"]})
+            elif "data" in p:
+                d = p["data"]
+                if isinstance(d, dict):
+                    meta = d.get("metadata", {})
+                    mime = meta.get("mimeType") if isinstance(meta, dict) else None
+                    if mime == _A2UI_MIME:
+                        out.append({"kind": "a2ui", "data": d.get("data", d)})
+                    elif "data" in d:
+                        out.append({"kind": "a2ui", "data": d["data"]})
+            elif "file" in p:
+                uri = p.get("file", {}).get("uri")
+                if uri:
+                    out.append({"kind": "text", "text": uri})
+            continue
+
         root = getattr(p, "root", p)
-        if isinstance(root, TextPart) and getattr(root, "text", None):
-            out.append({"kind": "text", "text": root.text})
+        text_val = getattr(root, "text", None)
+        if text_val:
+            out.append({"kind": "text", "text": text_val})
         elif getattr(root, "data", None) is not None:
+            data_val = root.data
             meta = getattr(root, "metadata", None) or {}
             mime = meta.get("mimeType") if isinstance(meta, dict) else None
             if mime == _A2UI_MIME:
-                out.append({"kind": "a2ui", "data": root.data})
+                out.append({"kind": "a2ui", "data": data_val})
         elif isinstance(root, FilePart):
             uri = getattr(getattr(root, "file", None), "uri", None)
             if uri:
@@ -168,37 +190,75 @@ async def chat(req: Request):
 
     async with httpx.AsyncClient(headers=_auth_headers(), timeout=120) as client:
         card = await _get_card(client)
-        factory = ClientFactory(
-            ClientConfig(
+        try:
+            config = ClientConfig(
                 supported_transports=[
                     TransportProtocol.jsonrpc,
                     TransportProtocol.http_json,
                 ],
                 httpx_client=client,
             )
-        )
+        except TypeError:
+            config = ClientConfig(httpx_client=client)
+
+        factory = ClientFactory(config)
         a2a_client = factory.create(card)
 
-        msg = Message(
-            message_id=str(uuid.uuid4()),
-            role=Role.user,
-            parts=[Part(root=TextPart(text=message))],
-            context_id=_contexts.get(user_id),
-        )
+        context_id = _contexts.get(user_id)
+        try:
+            from a2a.types import (
+                Message as ProtoMessage,
+                Part as ProtoPart,
+                Role as ProtoRole,
+                SendMessageRequest,
+            )
+
+            msg = ProtoMessage(
+                message_id=str(uuid.uuid4()),
+                role=ProtoRole.ROLE_USER,
+                parts=[ProtoPart(text=message)],
+            )
+            if context_id:
+                msg.context_id = context_id
+            send_payload = SendMessageRequest(message=msg)
+        except Exception:
+            msg = Message(
+                message_id=str(uuid.uuid4()),
+                role=Role.user,
+                parts=[Part(root=TextPart(text=message))],
+                context_id=context_id,
+            )
+            send_payload = msg
 
         last_task = None
         got_artifact_update = False
-        async for event in a2a_client.send_message(msg):
-            if not isinstance(event, tuple):
-                continue
-            task, update = event
-            if task is not None:
-                last_task = task
-                if getattr(task, "context_id", None):
-                    _contexts[user_id] = task.context_id
-            if isinstance(update, TaskArtifactUpdateEvent):
-                got_artifact_update = True
-                parts.extend(_extract_parts(update.artifact.parts))
+        async for event in a2a_client.send_message(send_payload):
+            if hasattr(event, "HasField") or hasattr(event, "DESCRIPTOR"):
+                from google.protobuf.json_format import MessageToDict
+
+                d = MessageToDict(event)
+                if "task" in d and d["task"].get("contextId"):
+                    _contexts[user_id] = d["task"]["contextId"]
+                elif "statusUpdate" in d and d["statusUpdate"].get("contextId"):
+                    _contexts[user_id] = d["statusUpdate"]["contextId"]
+                elif (
+                    "artifactUpdate" in d and d["artifactUpdate"].get("contextId")
+                ):
+                    _contexts[user_id] = d["artifactUpdate"]["contextId"]
+
+                if "artifactUpdate" in d:
+                    got_artifact_update = True
+                    art = d["artifactUpdate"].get("artifact", {})
+                    parts.extend(_extract_parts(art.get("parts", [])))
+            elif isinstance(event, tuple):
+                task, update = event
+                if task is not None:
+                    last_task = task
+                    if getattr(task, "context_id", None):
+                        _contexts[user_id] = task.context_id
+                if isinstance(update, TaskArtifactUpdateEvent):
+                    got_artifact_update = True
+                    parts.extend(_extract_parts(update.artifact.parts))
 
         # Non-streaming fallback: pull parts from the final task's artifacts.
         if not got_artifact_update and last_task is not None:
@@ -206,8 +266,6 @@ async def chat(req: Request):
                 parts.extend(_extract_parts(artifact.parts))
 
     if not parts:
-        # The turn produced no text or UI (e.g. the agent only ran tools, or a
-        # tool stalled). Be honest rather than silent.
         parts = [{"kind": "text", "text": "(The agent didn't return a reply.)"}]
     return JSONResponse({"parts": parts})
 

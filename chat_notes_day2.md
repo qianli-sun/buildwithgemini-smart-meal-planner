@@ -426,3 +426,46 @@ The prompt in this section from the lab guide says
    - Enhanced `main.py` with compatibility imports for `a2a-sdk` (handling both v0.3 and v1.x) and robust static file path resolution.
 3. **Verified Live Connectivity**:
    - Validated that the proxy successfully authenticates with ADC and fetches the live Agent Card (`HTTP 200 OK`) from the deployed agent on Agent Runtime.
+
+---
+
+### Turn 16
+
+#### 👤 User Prompt
+```text
+Here’s the next sub-step (test locally):
+
+1) Lab guide gave two prompts (either/or):
+
+“Run my frontend locally from the frontend/ folder: install its dependencies, set AGENT_ENGINE_RESOURCE_NAME to the resource name in deployment_metadata.json and AGENT_DIRECTORY to my agent_directory from agents-cli-manifest.yaml, then start the server on http://localhost:8080.”
+
+OR 
+“
+If you would rather run it yourself, from the frontend/ folder:
+
+pip install -r requirements.txt
+export AGENT_ENGINE_RESOURCE_NAME="<paste the resource name from deployment_metadata.json>"
+export AGENT_DIRECTORY="app"
+python main.py
+
+Then test it in your browser:
+”
+Feel free to decide which one is more convenient for testing locally.
+
+2) For “the server on http://localhost:8080”, I am a bit confused - I thought it’s the ADK dev UI’s browser page? Did it became the front end UI’s browser address instead after we built the front end?
+
+Answer both very intuitively and concisely.
+```
+
+#### 🤖 Antigravity Response
+1. **Clarified `http://localhost:8080` Intuitively**:
+   - Explained that `localhost:8080` is a local workstation port (door number).
+   - Earlier, the local ADK Dev UI occupied port 8080 during development.
+   - Now that the agent is deployed to Google Cloud, we stopped the local ADK server and launched our custom frontend on port 8080.
+   - Refreshing `http://localhost:8080` in the browser now displays the custom web chat application.
+2. **Started Frontend & Validated End-to-End**:
+   - Handled protobuf conversion and A2A SDK 1.x stream parsing in `frontend/main.py`.
+   - Started the frontend server on port 8080.
+   - Verified end-to-end conversation:
+     - Message: *"Hi, what can you do?"* -> Deployed cloud agent rendered A2UI overview card.
+     - Multi-turn memory test: *"What did I just ask?"* -> Agent replied: *"You just asked: 'Hi, what can you do?'"*.
