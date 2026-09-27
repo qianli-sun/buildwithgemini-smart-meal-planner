@@ -31,6 +31,7 @@ from app.a2ui_utils import a2ui_callback
 from app.tools import (
     check_daily_schedule,
     generate_dish_image,
+    generate_dish_video,
     generate_grocery_list,
     get_recipe_details,
     save_recipe,
@@ -111,10 +112,11 @@ instruction = schema_manager.generate_system_prompt(
         "- Use `get_recipe_details` to retrieve complete ingredient lists, step-by-step instructions, and nutritional macros.\n"
         "- Use `save_recipe` when the user wants to add a new favorite dish or store a customized recipe in Firestore.\n"
         "- Use `generate_dish_image` to create an appetizing photo preview of a dish and get a public Cloud Storage image URL.\n"
+        "- Use `generate_dish_video` when the user asks for a video, animation, or visual motion preview of a dish or recipe (uses Google's Omni gemini-omni-flash-preview model in global region and returns a public Cloud Storage MP4 URL).\n"
         "- Use `generate_grocery_list` to consolidate ingredients across selected recipes into an organized supermarket shopping checklist grouped by aisle.\n"
         "- Be concise, practical, and helpful with nutrition, ingredients, and prep times."
     ),
-    workflow_description="Analyze the request, call the appropriate tools (checking schedule, fetching recipe details, or generating images), and return structured UI when presenting meal plans, recipe summaries, dish cards, or grocery checklists.",
+    workflow_description="Analyze the request, call the appropriate tools (checking schedule, fetching recipe details, generating images or Omni videos), and return structured UI when presenting meal plans, recipe summaries, dish cards, or grocery checklists.",
     ui_description=(
         "Keep every surface tiny and flat: ONE Card > ONE Column > a few Text rows. "
         "Never nest a Card inside a Card. "
@@ -155,6 +157,7 @@ root_agent = Agent(
         get_recipe_details,
         save_recipe,
         generate_dish_image,
+        generate_dish_video,
         generate_grocery_list,
         check_daily_schedule,
         get_weather,

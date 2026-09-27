@@ -19,6 +19,7 @@ runtime returns the numeric project number from google.auth.default() and
 GOOGLE_CLOUD_PROJECT, which breaks Firestore (default) database lookups.
 """
 
+import base64
 import datetime
 import os
 import re
@@ -337,6 +338,90 @@ async def generate_dish_image(
         }
     except Exception as e:
         return {"error": f"Failed to generate dish image: {e}"}
+
+
+async def generate_dish_video(
+    dish_name: str,
+    visual_style: str = "vibrant Studio Ghibli anime style, warm cozy lighting, appetizing food aesthetic",
+    tool_context: ToolContext | None = None,
+) -> dict[str, Any]:
+    """Generate a short video preview for a dish using Google's Omni model (gemini-omni-flash-preview) in the global region.
+
+    Args:
+        dish_name: Name of the dish (e.g. 'Steaming Ramen Bowl', 'Crispy Golden Salmon', 'Berry Yogurt Parfait').
+        visual_style: Visual art style or animation aesthetic (default: vibrant Studio Ghibli anime style with cozy lighting).
+        tool_context: Optional ADK ToolContext injected by the runtime to save artifacts to the Playground's Artifacts panel.
+
+    Returns:
+        A dictionary with status and public HTTPS URL (https://storage.googleapis.com/<bucket>/<object>) of the generated video.
+    """
+    client = get_genai_client()
+    storage_client = get_storage_client()
+    bucket = storage_client.bucket(IMAGE_BUCKET_NAME)
+
+    prompt = f"A short 3-second appetizing culinary animation of {dish_name}, {visual_style}."
+
+    try:
+        interaction = client.interactions.create(
+            model="gemini-omni-flash-preview",
+            input=prompt,
+            response_format={"type": "video"},
+        )
+
+        video_bytes = None
+        mime_type = "video/mp4"
+
+        if (
+            hasattr(interaction, "output_video")
+            and interaction.output_video
+            and getattr(interaction.output_video, "data", None)
+        ):
+            video_bytes = base64.b64decode(interaction.output_video.data)
+            if getattr(interaction.output_video, "mime_type", None):
+                mime_type = interaction.output_video.mime_type
+        elif hasattr(interaction, "steps") and interaction.steps:
+            for step in interaction.steps:
+                content_list = getattr(step, "content", []) or []
+                for item in content_list:
+                    if getattr(item, "type", "") == "video" and getattr(item, "data", None):
+                        video_bytes = base64.b64decode(item.data)
+                        mime_type = getattr(item, "mime_type", "video/mp4")
+                        break
+
+        if not video_bytes:
+            return {"error": "No video data returned from Omni video model."}
+
+        slug = re.sub(r"[^a-z0-9]+", "-", dish_name.lower()).strip("-")
+        filename = f"{slug}-omni.mp4"
+
+        # 1. Save with tool_context.save_artifact so it shows up in Playground's Artifacts panel
+        artifact_version = None
+        if tool_context is not None:
+            try:
+                part_artifact = types.Part.from_bytes(data=video_bytes, mime_type=mime_type)
+                artifact_version = await tool_context.save_artifact(
+                    filename=filename,
+                    artifact=part_artifact,
+                )
+            except Exception:
+                # Fallback if artifact service is not initialized in the current environment
+                pass
+
+        # 2. Upload the same video bytes to the public Cloud Storage bucket (no local file written)
+        blob = bucket.blob(filename)
+        blob.upload_from_string(video_bytes, content_type=mime_type)
+        public_url = f"https://storage.googleapis.com/{IMAGE_BUCKET_NAME}/{filename}"
+
+        return {
+            "status": "success",
+            "dish_name": dish_name,
+            "filename": filename,
+            "video_url": public_url,
+            "artifact_version": artifact_version,
+            "prompt": prompt,
+        }
+    except Exception as e:
+        return {"error": f"Failed to generate dish video: {e}"}
 
 
 def generate_grocery_list(recipe_ids: list[str]) -> dict[str, Any]:

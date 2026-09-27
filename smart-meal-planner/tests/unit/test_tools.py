@@ -17,6 +17,7 @@
 from app.tools import (
     check_daily_schedule,
     generate_dish_image,
+    generate_dish_video,
     generate_grocery_list,
     get_recipe_details,
     save_recipe,
@@ -120,6 +121,35 @@ async def test_generate_dish_image() -> None:
     assert "error" not in res
     assert res["status"] == "success"
     assert res["image_url"].startswith("https://storage.googleapis.com/smart-meal-planner-images-5805be95/")
+
+
+@pytest.mark.asyncio
+async def test_generate_dish_video_mocked(monkeypatch) -> None:
+    """Test generating a dish video with mocked Omni interactions API."""
+    import base64
+
+    class DummyVideo:
+        data = base64.b64encode(b"fake_mp4_video_data").decode("utf-8")
+        mime_type = "video/mp4"
+
+    class DummyInteraction:
+        output_video = DummyVideo()
+
+    class DummyInteractionsClient:
+        def create(self, **kwargs):
+            return DummyInteraction()
+
+    class DummyGenAIClient:
+        interactions = DummyInteractionsClient()
+
+    monkeypatch.setattr("app.tools.get_genai_client", lambda: DummyGenAIClient())
+
+    res = await generate_dish_video("Matcha Green Tea Parfait")
+    assert "error" not in res
+    assert res["status"] == "success"
+    assert res["dish_name"] == "Matcha Green Tea Parfait"
+    assert res["video_url"].endswith(".mp4")
+    assert res["video_url"].startswith("https://storage.googleapis.com/smart-meal-planner-images-5805be95/")
 
 
 

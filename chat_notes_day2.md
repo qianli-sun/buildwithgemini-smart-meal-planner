@@ -573,3 +573,38 @@ Looks good. Redeploy the frontend to Cloud Run.
    - Verified 100% of traffic routed to the new revision at `https://smart-meal-planner-frontend-397009693787.us-east1.run.app`.
 2. **Production Verification**:
    - Confirmed `SmartMeal Planner` branding, quick prompt chips, and styled dialogue render live on the public Cloud Run URL.
+
+---
+
+### Turn 21
+
+#### 👤 User Prompt
+```text
+Let’s go to step 14 - stretch goals:
+
+1) The lab guide gave several ideas. In particular it says to try video generation with Omni, we can run the prompt below
+
+“Add a tool that generates a short video for an item in my agent's domain (look at my project_brief.md) using Google's Omni model (gemini-omni-flash-preview) in the global region. Do two things with the generated video: (1) save it with tool_context.save_artifact so it shows up in the Playground's Artifacts panel, and (2) upload the same video bytes to the public Cloud Storage bucket I created earlier and return its public https URL (https://storage.googleapis.com/<bucket>/<object>) from the tool. Hardcode the bucket name as a string, the same way we hardcoded the Firestore project. Do not write the video to a local file and return a path. Use the Developer Knowledge MCP to confirm the API if you're unsure.” Do it.
+
+2) Starting ideas: you can decide what the video style would look like based on the context of this agent we are building. The goal is that the video should be fun and intuitive to watch (e.g., maybe use Ghibli animation style? I am just throwing some starting idea - you can decide)
+
+3) Finalize and Redeploy: After you are done with customization, I think we need to test locally at http://localhost:8080 first, and then redeploy? Also, is this change going to impact the backend agent we deployed to Agent Platform, or the front end only that we deployed to Cloud Run earlier?
+
+4) Small comment: why does the prompt need “save it with tool_context.save_artifact so it shows up in the Playground's Artifacts panel”? Is it used for testing in the ADK dev UI before we redeploy?
+
+Answer these questions very concisely and intuitively.
+```
+
+#### 🤖 Antigravity Response
+1. **Answered Architectural and Operational Questions**:
+   - Clarified that this change impacts the **backend agent** (where tools and models run), and that redeploying to Agent Platform is required to enable Omni in cloud sessions.
+   - Updated the **frontend** to natively embed playable HTML5 `<video>` cards and added a `🎥 Ghibli Dish Video` quick chip.
+   - Clarified that `tool_context.save_artifact` exists so the local ADK Dev UI / Playground immediately displays the generated MP4 inside its "Artifacts" sidebar for instant inspection.
+2. **Implemented `generate_dish_video` Tool**:
+   - Used Google's `gemini-omni-flash-preview` via `client.interactions.create(model='gemini-omni-flash-preview', ...)` in the `global` region.
+   - Saves generated video bytes as an ADK artifact with `tool_context.save_artifact`.
+   - Uploads directly to Cloud Storage bucket `smart-meal-planner-images-5805be95` without writing to local disk, returning a public HTTPS URL.
+   - Added Studio Ghibli warm culinary animation style as the default visual style.
+3. **Registered Tool & Verified Tests**:
+   - Registered `generate_dish_video` in `app/agent.py` and updated system prompts.
+   - Verified that 9 unit tests and 6 integration tests pass completely.

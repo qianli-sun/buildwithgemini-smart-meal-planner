@@ -310,6 +310,7 @@
   <div id="quick-bar">
     <button type="button" class="chip" data-prompt="Plan a 15-min express dinner after a packed workday">⚡ 15-min Express Dinner</button>
     <button type="button" class="chip" data-prompt="Recommend a high-protein lunch and generate an image preview">🥗 High-Protein Lunch + Image</button>
+    <button type="button" class="chip" data-prompt="Generate a short Studio Ghibli style video preview for a delicious steaming bowl of noodles">🎥 Ghibli Dish Video</button>
     <button type="button" class="chip" data-prompt="Generate a categorized grocery shopping checklist">🛒 Smart Grocery Checklist</button>
     <button type="button" class="chip" data-prompt="What can you do?">✨ Overview & Capabilities</button>
   </div>
@@ -340,7 +341,7 @@ clearBtn.addEventListener("click", () => {
 
 function formatMarkdown(str) {
   if (!str) return "";
-  return str
+  let html = str
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/^### (.*$)/gim, '<div class="md-h3">$1</div>')
     .replace(/^## (.*$)/gim, '<div class="md-h2">$1</div>')
@@ -350,6 +351,8 @@ function formatMarkdown(str) {
     .replace(/^- (.*$)/gim, '<div class="md-li">• $1</div>')
     .replace(/\n\n/g, '<div class="md-spacer"></div>')
     .replace(/\n/g, '<br>');
+  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div style="margin: 10px 0;"><video controls playsinline style="max-width: 100%; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" src="$1"></video></div>');
+  return html;
 }
 
 function el(tag, cls, text) {
