@@ -271,8 +271,7 @@
   .a2text.a2-h3 { font-size: 1.05rem; font-weight: 600; color: #333; }
   .a2text.a2-h4 { font-size: 0.95rem; font-weight: 600; color: #444; }
   .a2text.a2-caption { font-size: 0.85rem; color: var(--text-muted); }
-  .a2divider { border: none; border-top: 1px solid var(--border); margin: 0.5rem 0; width: 100%; }
-  .a2img { max-width: 100%; border-radius: 10px; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 0.4rem 0; }
+  .a2img { max-width: 100%; max-height: 240px; width: 100%; object-fit: cover; border-radius: 10px; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin: 0.4rem 0; }
   .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-size: 1.35rem; line-height: 1; vertical-align: middle; color: var(--accent); }
 </style>
 </head>
@@ -353,7 +352,7 @@ function formatMarkdown(str) {
     .replace(/^- (.*$)/gim, '<div class="md-li">• $1</div>')
     .replace(/\n\n/g, '<div class="md-spacer"></div>')
     .replace(/\n/g, '<br>');
-  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div style="margin: 10px 0;"><video controls autoplay muted loop playsinline style="max-width: 100%; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" src="$1"></video></div>');
+  html = html.replace(/(https:\/\/storage\.googleapis\.com\/[^\s<"')]+\.mp4)/gim, '<div style="margin: 10px 0;"><video controls autoplay muted loop playsinline style="max-width: 100%; max-height: 240px; width: 100%; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" src="$1"></video></div>');
   return html;
 }
 

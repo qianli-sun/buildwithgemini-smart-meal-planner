@@ -235,7 +235,7 @@ function parseArgs() {
     frame: true,               // draw the branded frame
     title: 'Gemini World Tour',
     headless: true,
-    viewport: { width: 1280, height: 800 },
+    viewport: { width: 1120, height: 800 },
     preRollMs: 2500,           // hold on the empty UI before typing
     endPadMs: 2000,            // hold on the final reply before cutting
   };
@@ -409,9 +409,26 @@ Options:
     process.exit(1);
   }
 
-  // Re-draw the frame whenever the app navigates/re-renders (SPAs wipe nodes).
-  page.on('framenavigated', () => injectFrame(page, { title: options.title, assets }));
-  await injectFrame(page, { title: options.title, assets });
+  // Re-draw the frame and inject high-readability typography whenever the app navigates
+  const applyEnhancements = async () => {
+    await injectFrame(page, { title: options.title, assets });
+    await page.addStyleTag({
+      content: `
+        html { font-size: 18.5px !important; }
+        body { -webkit-font-smoothing: antialiased; }
+        .bubble { font-size: 1.12rem !important; line-height: 1.55 !important; }
+        .a2text.a2-h2 { font-size: 1.45rem !important; font-weight: 800 !important; }
+        .a2text.a2-body { font-size: 1.08rem !important; }
+        .a2text.a2-caption { font-size: 0.95rem !important; }
+        .a2card { padding: 1.2rem !important; }
+        input { font-size: 1.15rem !important; }
+        form { max-width: 950px !important; }
+        #log { max-width: 950px !important; margin: 0 auto; }
+      `
+    });
+  };
+  page.on('framenavigated', applyEnhancements);
+  await applyEnhancements();
   await page.waitForTimeout(options.preRollMs);
 
   // Selector covers the custom frontend (<input id="input">) and the ADK dev UI
@@ -438,7 +455,7 @@ Options:
   for (let i = 0; i < options.queries.length; i++) {
     const query = options.queries[i];
     console.log(`\n[Turn ${i + 1}/${options.queries.length}] Typing query: "${query}"`);
-    await injectFrame(page, { title: options.title, assets }); // keep frame present
+    await applyEnhancements(); // keep frame and typography present
     await chatInput.click();
     await page.waitForTimeout(500);
     await chatInput.pressSequentially(query, { delay: options.typingDelay });
@@ -462,6 +479,12 @@ Options:
         { timeout: options.waitMs }
       );
       console.log('Response arrived and rendered on screen!');
+      await page.waitForTimeout(600);
+      await page.evaluate(() => {
+        const msgs = document.querySelectorAll('.msg.agent');
+        const latest = msgs[msgs.length - 1];
+        if (latest) latest.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
     } catch (e) {
       console.log('Timeout waiting for response; continuing...');
     }
