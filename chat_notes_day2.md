@@ -509,3 +509,22 @@ Feel free to decide which one is more convenient for deploying to cloud run.
    - `GET /` returned `HTTP 200 OK` serving the custom chat UI.
    - `POST /chat` returned `HTTP 200 OK` with live agent reasoning from Vertex AI Reasoning Engine.
    - Multi-turn session verified: agent correctly recalled previous turn context.
+
+---
+
+### Turn 18
+
+#### 👤 User Prompt
+```text
+Two follow-up questions: 
+1) You said "Packaged the FastAPI web proxy and A2UI chat interface into a lightweight container." What is a container? Why do we need it here? Answer very intuitively and concisely as I am new to it
+
+2) Is the URL you give the "Cloud Run URL" the lab guide is referring to?
+```
+
+#### 🤖 Antigravity Response
+1. **Container Intuition & Purpose**:
+   - Explained container concept using the sealed shipping box / fully-furnished apartment analogy (bundles application code, Python runtime, and all dependencies).
+   - Clarified why Cloud Run needs it: Cloud Run runs applications in isolated, standardized cloud environments without relying on the local machine setup.
+2. **Cloud Run URL Confirmation**:
+   - Confirmed `https://smart-meal-planner-frontend-397009693787.us-east1.run.app` is the exact Cloud Run URL referenced in the lab guide.
