@@ -427,8 +427,34 @@ Options:
     console.log('Sending message...');
     await chatInput.press('Enter');
 
-    console.log(`Waiting ${options.waitMs / 1000}s for response...`);
-    await page.waitForTimeout(options.waitMs);
+    console.log(`Waiting for response (timeout ${options.waitMs / 1000}s)...`);
+    try {
+      await page.waitForFunction(
+        (turnIndex) => {
+          const msgs = document.querySelectorAll('.msg.agent, .row.agent');
+          if (msgs.length < turnIndex + 1) return false;
+          const currentAgentRow = msgs[turnIndex];
+          const b = currentAgentRow.querySelector('.bubble');
+          if (!b) return false;
+          const text = b.textContent.trim();
+          return text !== '…' && text !== '...' && text.length > 0;
+        },
+        i,
+        { timeout: options.waitMs }
+      );
+      console.log('Response arrived and rendered!');
+    } catch (e) {
+      console.log('Timeout waiting for response; continuing...');
+    }
+
+    const isVideoTurn = query.toLowerCase().includes('video');
+    if (isVideoTurn) {
+      console.log('Video turn: holding 7s to showcase animated video playback...');
+      await page.waitForTimeout(7000);
+    } else {
+      console.log('Holding 3.5s for comfortable reading...');
+      await page.waitForTimeout(3500);
+    }
   }
 
   // Hold on the final reply so the video doesn't cut off abruptly.

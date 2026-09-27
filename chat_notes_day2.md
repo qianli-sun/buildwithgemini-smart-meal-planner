@@ -738,3 +738,28 @@ Suggestion from guide:
    - Excluded ephemeral Cloud Run / localhost URLs, replacing them with clear local setup/run commands (`agents-cli install`, `agents-cli playground`, `python main.py`, `pytest`).
 3. **Committed & Synced**:
    - Pushed `README.md` and `demo.gif` to the public GitHub repository (`qianli-sun/buildwithgemini-smart-meal-planner`).
+
+---
+
+### Turn 27
+
+#### 👤 User Prompt
+```text
+Two suggestions:
+1) I watched the 1-min recorded demo video. The first 30 seconds or so are just waiting for the response of the first prompt, which feels weird. Is there a way to optimize the video accordingly?
+The two prompts you demo-ed are great btw. You don't need to change those.
+2) Also, once you improved the video, you might need to re-do the "turn it into a Sharable MD" step earlier, so that the GIF is updated accordingly. Feel free to decide if this is needed.
+```
+
+#### 🤖 Antigravity Response
+1. **Identified Root Cause of First Prompt Wait Time**:
+   - `record-agent.js` had a static sleep `waitForTimeout(options.waitMs)` for every turn, holding for 42s regardless of how quickly the server finished responding.
+2. **Dynamic Response Arrival Detection**:
+   - Replaced static timeouts with `page.waitForFunction()` targeting the agent message bubble: as soon as the response arrives and the loading indicator (`…`) is replaced by real content, it resolves immediately!
+   - Added a calibrated 3.5s reading window after Turn 1 (recipe + A2UI card) and a 7s video playback window after Turn 2.
+   - Updated the chat UI's embedded `<video>` tag with `autoplay muted loop` so the animated Studio Ghibli preview starts moving immediately upon arrival.
+3. **Re-recorded Clean Snappy Video & Updated GIF**:
+   - Re-recorded demo with Google Omni video and Lyria soundtrack: crisp ~50s total length with zero dead time.
+   - Redeployed frontend to Cloud Run revision `smart-meal-planner-frontend-00005-h48`.
+   - Re-generated optimized looping `demo.gif` (1.7 MB).
+   - Committed and pushed updated `demo.gif` to GitHub.
