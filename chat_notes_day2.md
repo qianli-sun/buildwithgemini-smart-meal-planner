@@ -902,6 +902,35 @@ Two suggestions:
 4. **Git Sync**:
    - Committed (`f431250`) and pushed to GitHub main.
 
+---
+
+### Turn 33
+
+#### 👤 User Prompt
+```text
+Two asks:
+1) Now the font size for the two prompts in the demo is visibly much larger than the body section of the response below the image and the video. Can we make the body font size a tiny little bit larger (don't over do it), while not sacrificing the overall display size of the image and the video?
+
+2) Now the video response of the ramen is only 3 seconds. Can you make it longer to about 5-7 seconds at least?
+```
+
+#### 🤖 Antigravity Response
+1. **Upgraded Dish Video to Full 6-Second Culinary Animation**:
+   - Tested Google's Omni video model (`gemini-omni-flash-preview`) with prompt requesting a 6-second appetizing animation. The model successfully generated a 6.02s high-definition video (`1280x720` at 24fps) featuring a full story arc: rich miso broth pouring from a ladle into a blue-and-white porcelain bowl, noodles and toppings (chashu, ajitsuke tamago, scallions) being assembled, gentle steam rising, and chopsticks lifting the noodles.
+   - Uploaded the new 6-second video to the public GCS bucket (`smart-meal-planner-images-5805be95/steaming-japanese-miso-ramen-omni.mp4`).
+   - Updated `generate_dish_video` in `smart-meal-planner/app/tools.py` to default to 6-second animation prompts.
+2. **Balanced Typography Harmony (Prompt vs Body Text)**:
+   - Harmonized font sizes: set `.msg.user .bubble`, `input`, and `.a2text.a2-body` / `.a2text.a2-caption` to matching `1.02rem` (`16.8px`).
+   - Prompts no longer look disproportionately large compared to the card content, and the recipe body details are a tiny bit larger and easier to read without crowding the card.
+   - Preserved maximum media display size by retaining the `840px` wide container with `width: 100%` and `aspect-ratio: 16 / 9`, keeping the ramen photo and video prominent.
+3. **Re-recorded and Mastered 6s Demo**:
+   - Re-recorded demo with Playwright: video plays continuously from 0s to 6s and holds cleanly at `0:06 / 0:06`.
+   - Mastered `demo.gif` (7.8 MB, 940px wide).
+   - Verified frames: visually verified frame 140 (harmonious prompt/body text), frame 255 (broth and bowl), and frame 300 (ramen noodle lift at 6s).
+4. **Git Sync**:
+   - Committed (`f34230a`) and pushed to GitHub main.
+
+
 
 
 
