@@ -235,7 +235,7 @@ function parseArgs() {
     frame: true,               // draw the branded frame
     title: 'Gemini World Tour',
     headless: true,
-    viewport: { width: 1120, height: 800 },
+    viewport: { width: 1160, height: 860 },
     preRollMs: 2500,           // hold on the empty UI before typing
     endPadMs: 2000,            // hold on the final reply before cutting
   };
@@ -414,16 +414,18 @@ Options:
     await injectFrame(page, { title: options.title, assets });
     await page.addStyleTag({
       content: `
-        html { font-size: 18.5px !important; }
+        html { font-size: 18px !important; }
         body { -webkit-font-smoothing: antialiased; }
         .bubble { font-size: 1.12rem !important; line-height: 1.55 !important; }
         .a2text.a2-h2 { font-size: 1.45rem !important; font-weight: 800 !important; }
         .a2text.a2-body { font-size: 1.08rem !important; }
         .a2text.a2-caption { font-size: 0.95rem !important; }
-        .a2card { padding: 1.2rem !important; }
+        .a2card { padding: 1.25rem !important; }
+        .a2img { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; margin: 0.5rem 0 !important; }
+        video { max-width: 100% !important; aspect-ratio: 16 / 9 !important; object-fit: cover !important; border-radius: 10px !important; }
         input { font-size: 1.15rem !important; }
-        form { max-width: 950px !important; }
-        #log { max-width: 950px !important; margin: 0 auto; }
+        form { max-width: 760px !important; }
+        #log { max-width: 760px !important; margin: 0 auto; }
       `
     });
   };
